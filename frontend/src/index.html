@@ -6,7 +6,7 @@
     <title>DocuSmart Seguros · Análise Inteligente de Sinistros</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -16,11 +16,11 @@
         <div class="header-content">
             <div class="logo-section">
                 <div class="logo-icon">
-                    <i class="fas fa-shield-halved"></i>
+                    <img src="../assets/logo.png" alt="Logo" class="logo-img">
                 </div>
                 <div class="logo-text">
-                    <h1>DocuSmart <span>Seguros</span></h1>
-                    <span class="subtitle">Análise Inteligente de Sinistros · AWS Serverless</span>
+                    <h1>Docu<span>Smart</span></h1>
+                    <span class="subtitle">SEGUROS</span>
                 </div>
             </div>
             <div class="header-actions">
@@ -43,7 +43,7 @@
     <!-- ===== MAIN ===== -->
     <main class="main">
         <div class="page-title">
-            <h2>📄 Análise de Documentos</h2>
+            <h2 class="analysis-icon"><img src="../assets/analysis.png" alt="Análise" class="analysis-img">Análise de Documentos</h2>
             <p>Faça upload do documento de sinistro ou consulte registros existentes</p>
         </div>
 
@@ -52,11 +52,10 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-header-left">
-                        <div class="icon-wrapper icon-primary">
-                            <i class="fas fa-upload"></i>
-                        </div>
-                        <div>
-                            <h3>Enviar Documento</h3>
+                            <img src="../assets/send.png" alt="Enviar" class="send-img">
+
+                             <div class="header-text">
+                 <h3>Enviar Documento</h3>
                             <span class="sub">Upload para análise automatizada</span>
                         </div>
                     </div>
@@ -116,7 +115,7 @@
                     </div>
 
                     <!-- Actions -->
-                    <button class="btn btn-primary btn-block" id="analyzeBtn">
+                    <button class="btn btn-secondary btn-block" id="analyzeBtn">
                         <span class="btn-text"><i class="fas fa-microchip"></i> Analisar com Strands Agent</span>
                         <span class="spinner"></span>
                     </button>
@@ -143,10 +142,8 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-header-left">
-                        <div class="icon-wrapper icon-success">
-                            <i class="fas fa-database"></i>
-                        </div>
-                        <div>
+                        <img src="../assets/database.png" alt="Consultar" class="database-img">
+                        <div class="header-text">
                             <h3>Consulta e Resultados</h3>
                             <span class="sub">Busque registros ou veja o último resultado</span>
                         </div>
@@ -189,7 +186,7 @@
                                 <label class="form-label"><i class="fas fa-calendar"></i> Data final</label>
                                 <input class="form-input" id="dateEnd" type="date">
                             </div>
-                            <button class="btn btn-primary" id="searchBtn" style="height: 38px;">
+                            <button class="btn btn-secondary" id="searchBtn" style="height: 38px;">
                                 <i class="fas fa-search"></i> Buscar
                             </button>
                             <button class="btn btn-outline" id="clearSearchBtn" style="height: 38px;">
@@ -356,8 +353,12 @@
     <!-- ===== MODAL ===== -->
     <div class="modal-overlay" id="detailModal">
         <div class="modal-content">
+            
             <div class="modal-header">
-                <h3><i class="fas fa-file-lines" style="color: var(--primary);"></i> Detalhes do Registro</h3>
+                <h3 class="modal-title">
+                    <img src="../assets/search.png" alt="Detalhes" class="search-img"> 
+                    Detalhes do Registro
+                </h3>
                 <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" id="modalBody">

@@ -389,7 +389,7 @@
                         ${item.resumo.substring(0, 50)}${item.resumo.length > 50 ? '...' : ''}
                     </span>
                 </div>
-                <button class="btn btn-primary btn-sm view-btn" data-id="${item.id}">
+                <button class="btn btn-secondary btn-sm view-btn" data-id="${item.id}">
                     <i class="fas fa-eye"></i> Ver
                 </button>
             `;

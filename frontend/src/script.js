@@ -1,3 +1,8 @@
+// ========================================
+// CONFIGURAÇÕES - API GATEWAY
+// ========================================
+const DEFAULT_API_URL = 'https://ljdmh3sai3.execute-api.us-east-1.amazonaws.com/prod/analisar-sinistro';
+
 (function() {
     'use strict';
 
@@ -798,7 +803,7 @@
     }
 
     // ========================================
-    // ANALYZE / MOCK
+    // SET STATUS
     // ========================================
     function setStatus(text, type = 'success') {
         statusText.textContent = text;
@@ -808,6 +813,106 @@
         else statusDot.style.background = '#48bb78';
     }
 
+    // ========================================
+    // ANALYZE FUNCTION - CORRIGIDA (Envia bucket + key em JSON)
+    // ========================================
+    async function analyzeDocument() {
+        // Obtém a URL da API
+        const apiUrl = apiUrlInput.value.trim() || DEFAULT_API_URL;
+        
+        // Pega o bucket e a key dos campos
+        const bucket = bucketInput.value.trim() || 'docsmart-grupo10';
+        const key = keyInput.value.trim();
+
+        // Valida se a key foi informada
+        if (!key) {
+            showToast('Por favor, informe a chave (key) do documento no S3.', 'warning');
+            return;
+        }
+
+        // Loading state
+        analyzeBtn.disabled = true;
+        analyzeBtn.classList.add('loading');
+        setStatus('Processando...', 'warning');
+
+        try {
+            // Cria o payload no formato que a Lambda espera
+            const payload = {
+                bucket: bucket,
+                key: key
+            };
+
+            showToast('📤 Enviando para API Gateway...', 'info');
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            // Verifica se a resposta é OK
+            if (!response.ok) {
+                let errorMessage = `Erro ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.erro) {
+                        errorMessage = errorData.erro;
+                    } else if (errorData.detail) {
+                        errorMessage = errorData.detail;
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (e) {
+                    try {
+                        const textError = await response.text();
+                        if (textError) errorMessage = textError;
+                    } catch (e2) {}
+                }
+                throw new Error(errorMessage);
+            }
+
+            // Tenta parsear a resposta como JSON
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                throw new Error('Resposta da API não está em formato JSON válido');
+            }
+
+            // Verifica se a resposta contém os dados esperados
+            if (data.status === 'processado') {
+                // A Lambda retorna o resultado dentro do campo 'resultado'
+                displayResult(data.resultado || data);
+                setStatus('Concluído', 'success');
+                showToast('✅ Análise concluída com sucesso!', 'success');
+            } else if (data.id) {
+                // Se tiver id diretamente, é o resultado
+                displayResult(data);
+                setStatus('Concluído', 'success');
+                showToast('✅ Análise concluída com sucesso!', 'success');
+            } else if (data.success && data.data) {
+                displayResult(data.data);
+                setStatus('Concluído', 'success');
+                showToast('✅ Análise concluída com sucesso!', 'success');
+            } else {
+                throw new Error(data.erro || 'Resposta da API não contém os dados esperados');
+            }
+
+        } catch (error) {
+            console.error('Erro na análise:', error);
+            showToast('❌ Erro: ' + error.message, 'error');
+            setStatus('Erro', 'error');
+        } finally {
+            analyzeBtn.disabled = false;
+            analyzeBtn.classList.remove('loading');
+        }
+    }
+
+    // ========================================
+    // MOCK FUNCTION (Simulação local)
+    // ========================================
     function generateMockResult(bucket, key, filename) {
         const docTypes = ['Boletim de Ocorrência', 'Laudo Médico', 'Nota Fiscal', 'Documento de Identidade'];
         const tipo = docTypes[Math.floor(Math.random() * docTypes.length)];
@@ -851,6 +956,30 @@
         };
     }
 
+    function simulateAnalysis() {
+        const bucket = bucketInput.value.trim() || 'docusmart-sinistros';
+        const key = keyInput.value.trim() || (selectedFile ? selectedFile.name : 'documento.pdf');
+        const filename = selectedFile ? selectedFile.name : key;
+
+        setStatus('Simulando...', 'warning');
+        showToast('🔬 Simulando análise com dados mock', 'info');
+
+        analyzeBtn.disabled = true;
+        analyzeBtn.classList.add('loading');
+
+        setTimeout(() => {
+            const mockData = generateMockResult(bucket, key, filename);
+            displayResult(mockData);
+            setStatus('Simulação concluída', 'success');
+            analyzeBtn.disabled = false;
+            analyzeBtn.classList.remove('loading');
+            showToast('✅ Simulação finalizada!', 'success');
+        }, 1500);
+    }
+
+    // ========================================
+    // DISPLAY RESULT
+    // ========================================
     function displayResult(data) {
         const tipo = data.tipo_documento || 'Outro';
         const tagClass = {
@@ -907,27 +1036,9 @@
         showToast('✅ Análise concluída com sucesso!', 'success');
     }
 
-    function simulateAnalysis() {
-        const bucket = bucketInput.value.trim() || 'docusmart-sinistros';
-        const key = keyInput.value.trim() || (selectedFile ? selectedFile.name : 'documento.pdf');
-        const filename = selectedFile ? selectedFile.name : key;
-
-        setStatus('Simulando...', 'warning');
-        showToast('🔬 Simulando análise com dados mock', 'info');
-
-        analyzeBtn.disabled = true;
-        analyzeBtn.classList.add('loading');
-
-        setTimeout(() => {
-            const mockData = generateMockResult(bucket, key, filename);
-            displayResult(mockData);
-            setStatus('Simulação concluída', 'success');
-            analyzeBtn.disabled = false;
-            analyzeBtn.classList.remove('loading');
-            showToast('✅ Simulação finalizada!', 'success');
-        }, 1500);
-    }
-
+    // ========================================
+    // CLEAR ALL
+    // ========================================
     function clearAll() {
         selectedFile = null;
         fileInput.value = '';
@@ -949,6 +1060,9 @@
         showToast('🧹 Área limpa', 'info');
     }
 
+    // ========================================
+    // COPY RESULT
+    // ========================================
     function copyResult() {
         if (!currentResult) {
             showToast('Nenhum resultado para copiar.', 'warning');
@@ -971,7 +1085,8 @@
     // ========================================
     // EVENT LISTENERS
     // ========================================
-    analyzeBtn.addEventListener('click', simulateAnalysis);
+    // Botão "Analisar" agora chama a função analyzeDocument (integração com API)
+    analyzeBtn.addEventListener('click', analyzeDocument);
     clearBtn.addEventListener('click', clearAll);
     mockBtn.addEventListener('click', simulateAnalysis);
     document.getElementById('copyResultBtn').addEventListener('click', copyResult);
@@ -1017,5 +1132,6 @@
     console.log(`📊 Sistema inicializado com ${mockDatabase.length} registros`);
     console.log('🔍 Sistema de busca avançado carregado');
     console.log('📊 Exportação para CSV disponível');
+    console.log(`🔗 API Gateway: ${DEFAULT_API_URL}`);
 
-})();
+})()

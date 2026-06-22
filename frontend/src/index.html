@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuSmart Seguros · Análise Inteligente de Sinistros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <img src="../assets/logo.png" alt="Logo" class="logo-img">
+                </div>
+                <div class="logo-text">
+                    <h1>Docu<span>Smart</span></h1>
+                    <span class="subtitle">SEGUROS</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="header-badge" id="statusBadge">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Sistema Online</span>
+                </div>
+                <div class="header-badge">
+                    <i class="fas fa-robot"></i>
+                    <span>Strands Agent v1.0</span>
+                </div>
+                <div class="header-badge">
+                    <i class="fas fa-code-branch"></i>
+                    <span>FastAPI · Serverless</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+        <div class="page-title">
+            <h2 class="analysis-icon"><img src="../assets/analysis.png" alt="Análise" class="analysis-img">Análise de Documentos</h2>
+            <p>Faça upload do documento de sinistro ou consulte registros existentes</p>
+        </div>
+
+        <div class="grid-2">
+            <!-- ===== LEFT CARD ===== -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                            <img src="../assets/send.png" alt="Enviar" class="send-img">
+
+                             <div class="header-text">
+                 <h3>Enviar Documento</h3>
+                            <span class="sub">Upload para análise automatizada</span>
+                        </div>
+                    </div>
+                    <span class="badge-header">
+                        <i class="fas fa-lock" style="margin-right: 4px;"></i>Seguro
+                    </span>
+                </div>
+                <div class="card-body">
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="icon-big">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                        </div>
+                        <h4>Arraste seu arquivo aqui</h4>
+                        <p>ou clique para selecionar</p>
+                        <div class="hint">Suporta PDF, JPG, PNG · até 10 MB</div>
+                        <div class="formats">
+                            <span class="format-badge"><i class="fas fa-file-pdf"></i> PDF</span>
+                            <span class="format-badge"><i class="fas fa-file-image"></i> JPG</span>
+                            <span class="format-badge"><i class="fas fa-file-image"></i> PNG</span>
+                        </div>
+                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png">
+                    </div>
+
+                    <!-- File Info -->
+                    <div class="file-info" id="fileInfo">
+                        <div class="file-detail">
+                            <i class="fas fa-file-pdf" id="fileIcon"></i>
+                            <div>
+                                <div class="name" id="fileName">documento.pdf</div>
+                                <div class="size" id="fileSize">0 KB</div>
+                            </div>
+                        </div>
+                        <div class="file-status">
+                            <i class="fas fa-check-circle"></i> Pronto para análise
+                        </div>
+                    </div>
+
+                    <!-- Bucket/Key (opcional) -->
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label"><i class="fas fa-folder"></i> Bucket S3</label>
+                                <input class="form-input" id="bucketInput" value="docusmart-sinistros" placeholder="Nome do bucket">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-key"></i> Chave (opcional)</label>
+                                <input class="form-input" id="keyInput" placeholder="auto: nome do arquivo">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API URL -->
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-server"></i> API Gateway Endpoint</label>
+                        <input class="form-input" id="apiUrlInput" value="https://ljdmh3sai3.execute-api.us-east-1.amazonaws.com/prod/analisar-sinistro" placeholder="URL da API">
+                    </div>
+
+                    <!-- Actions -->
+                    <button class="btn btn-secondary btn-block" id="analyzeBtn">
+                        <span class="btn-text"><i class="fas fa-microchip"></i> Analisar com Strands Agent</span>
+                        <span class="spinner"></span>
+                    </button>
+
+                    <div class="btn-group">
+                        <button class="btn btn-outline" id="clearBtn" style="flex: 1;">
+                            <i class="fas fa-undo-alt"></i> Limpar
+                        </button>
+                        <button class="btn btn-outline" id="mockBtn" style="flex: 1;">
+                            <i class="fas fa-flask"></i> Simular
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 12px; padding: 12px; background: #f0f5ff; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600);">
+                            <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                            <span>O arquivo é enviado para a FastAPI, que faz upload para S3 e aciona o agente Strands</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== RIGHT CARD ===== -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <img src="../assets/database.png" alt="Consultar" class="database-img">
+                        <div class="header-text">
+                            <h3>Consulta e Resultados</h3>
+                            <span class="sub">Busque registros ou veja o último resultado</span>
+                        </div>
+                    </div>
+                    <span class="badge-header">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i> DynamoDB
+                    </span>
+                </div>
+                <div class="card-body">
+                    <!-- ===== SEARCH / FILTER SECTION ===== -->
+                    <div class="search-section">
+                        <div class="filter-tabs" id="filterTabs">
+                            <button class="filter-tab active" data-filter="all">
+                                Todos <span class="count" id="countAll">0</span>
+                            </button>
+                            <button class="filter-tab" data-filter="boletim">
+                                Boletim <span class="count" id="countBoletim">0</span>
+                            </button>
+                            <button class="filter-tab" data-filter="laudo">
+                                Laudo <span class="count" id="countLaudo">0</span>
+                            </button>
+                            <button class="filter-tab" data-filter="fiscal">
+                                Nota Fiscal <span class="count" id="countFiscal">0</span>
+                            </button>
+                            <button class="filter-tab" data-filter="outro">
+                                Outros <span class="count" id="countOutro">0</span>
+                            </button>
+                        </div>
+
+                        <div class="search-row">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-search"></i> Buscar por ID ou texto</label>
+                                <input class="form-input" id="searchInput" placeholder="Ex: sin-abc123 ou 'boletim'">
+                            </div>
+                            <div class="form-group" style="flex: 0.5; min-width: 120px;">
+                                <label class="form-label"><i class="fas fa-calendar"></i> Data inicial</label>
+                                <input class="form-input" id="dateStart" type="date">
+                            </div>
+                            <div class="form-group" style="flex: 0.5; min-width: 120px;">
+                                <label class="form-label"><i class="fas fa-calendar"></i> Data final</label>
+                                <input class="form-input" id="dateEnd" type="date">
+                            </div>
+                            <button class="btn btn-secondary" id="searchBtn" style="height: 38px;">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <button class="btn btn-outline" id="clearSearchBtn" style="height: 38px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <!-- Search Results List -->
+                        <div class="search-results" id="searchResults">
+                            <div class="no-results" id="noResults">
+                                <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+                                Nenhum registro encontrado
+                            </div>
+                        </div>
+
+                        <!-- Select All e Contador -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; flex-wrap: wrap; gap: 8px;">
+                            <div class="select-all-wrapper">
+                                <input type="checkbox" id="selectAllCheckbox">
+                                <label for="selectAllCheckbox">Selecionar todos</label>
+                                <span class="selected-count" id="selectedCount" style="display: none;">0 selecionados</span>
+                            </div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="btn btn-export-selected btn-sm" id="exportSelectedBtn" style="display: none; height: 32px; padding: 4px 16px; font-size: 12px;">
+                                    <i class="fas fa-check-circle"></i> Exportar Selecionados
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination" id="pagination">
+                            <button id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
+                            <span id="pageInfo">
+                                <span id="currentPage">1</span>
+                                <span style="color: var(--gray-400);">de</span>
+                                <span id="totalPages">1</span>
+                            </span>
+                            <button id="nextPage"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Results Panel -->
+                    <div class="results-panel" id="resultsPanel">
+                        <!-- Tipo com badge -->
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-tag"></i> Tipo</span>
+                            <span class="value">
+                                <span class="tag tag-boletim" id="resultTipo">Boletim de Ocorrência</span>
+                            </span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-hashtag"></i> ID</span>
+                            <span class="value" id="resultId" style="font-family: monospace; font-size: 13px;">-</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-calendar"></i> Data</span>
+                            <span class="value" id="resultData">-</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-location-dot"></i> Local</span>
+                            <span class="value" id="resultLocal">-</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-money-bill-wave"></i> Valor Estimado</span>
+                            <span class="value" id="resultValor" style="font-weight: 600; color: var(--primary);">-</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-users"></i> Envolvidos</span>
+                            <span class="value" id="resultEnvolvidos">-</span>
+                        </div>
+
+                        <div class="result-item result-item-full">
+                            <span class="label"><i class="fas fa-file-lines"></i> Resumo</span>
+                            <span class="value" id="resultResumo">-</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-clock"></i> Processado em</span>
+                            <span class="value" id="resultProcessado" style="font-size: 13px; color: var(--gray-500);">-</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="label"><i class="fas fa-file"></i> Arquivo</span>
+                            <span class="value" id="resultArquivo" style="font-size: 13px; color: var(--gray-500);">-</span>
+                        </div>
+
+                        <!-- Ações do resultado -->
+                        <div class="result-actions">
+                            <button class="btn btn-outline" id="copyResultBtn" style="flex: 1;">
+                                <i class="fas fa-copy"></i> Copiar JSON
+                            </button>
+                            <button class="btn btn-export" id="exportCurrentBtn" style="flex: 1;">
+                                <i class="fas fa-file-excel"></i> Exportar CSV
+                            </button>
+                        </div>
+
+                        <!-- Export Actions Gerais -->
+                        <div class="export-actions">
+                            <button class="btn btn-export-all" id="exportAllBtn">
+                                <i class="fas fa-file-excel"></i> Exportar Todos
+                            </button>
+                            <button class="btn btn-outline" id="printAllBtn">
+                                <i class="fas fa-print"></i> Imprimir Relatório
+                            </button>
+                        </div>
+
+                        <!-- DynamoDB Preview -->
+                        <div style="margin-top: 20px;">
+                            <div class="dynamo-header">
+                                <i class="fas fa-table"></i>
+                                <span>DynamoDB · Registro completo</span>
+                                <span class="badge-db"><i class="fas fa-check"></i> put_item</span>
+                            </div>
+                            <div class="dynamo-preview" id="dynamoPreview">
+                                <span class="empty">// aguardando análise</span>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 12px; color: var(--gray-400); display: flex; gap: 16px; flex-wrap: wrap;">
+                                <span><i class="fas fa-info-circle"></i> ID gerado automaticamente pelo agente</span>
+                                <span><i class="fas fa-aws"></i> Amazon DynamoDB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty state -->
+                    <div class="empty-state" id="emptyState">
+                        <div class="icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <h4>Nenhuma análise realizada ainda</h4>
+                        <p>Faça upload de um documento no painel ao lado para iniciar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <span>© 2026 DocuSmart Seguros · Todos os direitos reservados</span>
+            <div class="links">
+                <a href="#"><i class="fas fa-shield"></i> Privacidade</a>
+                <a href="#"><i class="fas fa-file-contract"></i> Termos</a>
+                <a href="#"><i class="fas fa-question-circle"></i> Suporte</a>
+            </div>
+            <div class="tech">
+                <span class="badge-tech"><i class="fas fa-aws"></i> AWS</span>
+                <span class="badge-tech"><i class="fas fa-robot"></i> Strands</span>
+                <span class="badge-tech"><i class="fas fa-database"></i> DynamoDB</span>
+                <span class="badge-tech"><i class="fas fa-brain"></i> Bedrock</span>
+                <span class="badge-tech"><i class="fas fa-bolt"></i> FastAPI</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <img src="../assets/search.png" alt="Detalhes" class="search-img"> 
+                    Detalhes do Registro
+                </h3>
+                <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Conteúdo dinâmico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js"></script>
+</body>
+</html>

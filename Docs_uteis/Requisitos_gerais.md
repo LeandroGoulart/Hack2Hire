@@ -8,19 +8,19 @@ Este é um **laboratório prático e guiado** como parte do **Hack2Hire 2026**. 
 ## Pré-Requisitos
 
 ### 1. Conta AWS
-- ✅ Conta AWS ativa (pessoal ou fornecida pela Escola de Nuvem).
-- ✅ Acesso ao console AWS (https://console.aws.amazon.com).
-- ✅ Permissão para criar recursos (S3, Lambda, DynamoDB, API Gateway, IAM).
-- ℹ️ **Nota**: o laboratório usa serviços do **Free Tier** da AWS. Não há custo adicional esperado.
+-  Conta AWS ativa (pessoal ou fornecida pela Escola de Nuvem).
+-  Acesso ao console AWS (https://console.aws.amazon.com).
+-  Permissão para criar recursos (S3, Lambda, DynamoDB, API Gateway, IAM).
+-  **Nota**: o laboratório usa serviços do **Free Tier** da AWS. Não há custo adicional esperado.
 
 ### 2. Navegador Web
-- ✅ Qualquer navegador moderno (Chrome, Firefox, Edge, Safari).
-- ✅ **Nenhuma instalação local necessária** — tudo é feito pelo console AWS.
+-  Qualquer navegador moderno (Chrome, Firefox, Edge, Safari).
+-  **Nenhuma instalação local necessária** — tudo é feito pelo console AWS.
 
 ### 3. Conhecimento Esperado
 - **Nenhum pré-requisito técnico** — mentores guiam cada clique.
-- 🎯 **NÃO é necessário saber**: Python, Git, AWS CLI ou qualquer framework externo.
-- 🎯 **Você aprenderá**: como usar console AWS, criar recursos, conectá-los, testar APIs, ler resultados.
+-  **NÃO é necessário saber**: Python, Git, AWS CLI ou qualquer framework externo.
+-  **Você aprenderá**: como usar console AWS, criar recursos, conectá-los, testar APIs, ler resultados.
 
 ---
 

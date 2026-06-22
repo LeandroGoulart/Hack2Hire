@@ -11,9 +11,9 @@ from strands.tools import tool
 ```
 
 **Problema**: Você pediu para remover TODAS as plataformas de IA. Essa função usa:
-- ❌ **Strands Agents** — Framework externo de IA
-- ❌ **Amazon Bedrock** — Modelo LLM `us.amazon.nova-pro-v1:0`
-- ❌ **Amazon Textract** — Serviço de OCR (não está em Free Tier para educação)
+-  **Strands Agents** — Framework externo de IA
+-  **Amazon Bedrock** — Modelo LLM `us.amazon.nova-pro-v1:0`
+-  **Amazon Textract** — Serviço de OCR (não está em Free Tier para educação)
 
 **Impacto**: 
 - Não segue o requisito de "100% desenvolvido por estudantes Escola da Nuvem"
@@ -32,7 +32,7 @@ return {
     'body': json.dumps({'erro': str(e)}), 
     'headers': {'Content-Type': 'application/json'} 
 }
-# ❌ Falta fechar a chave }
+#  Falta fechar a chave }
 ```
 
 #### b) Tipo de Erro em Validação
@@ -41,14 +41,14 @@ if not bucket or not key:
     return { 
         'statusCode': 400, 
         'body': json.dumps({'erro': 'Informe bucket e key'}),
-        # ❌ Falta 'Access-Control-Allow-Origin' para CORS
+        #  Falta 'Access-Control-Allow-Origin' para CORS
     } 
 ```
 
 #### c) JSON Parsing Frágil
 ```python
 try: 
-    return json.loads(str(resposta))  # ❌ str(resposta) pode falhar
+    return json.loads(str(resposta))  #  str(resposta) pode falhar
 except: 
     # Tenta extrair JSON manualmente — processo frágil
 ```
@@ -56,12 +56,12 @@ except:
 #### d) Erro de Typo na Linha
 ```python
 dados_estruturado['tipo_documento'] = 'Documento de Identidade'  
-# ❌ 'dados_estruturado' deveria ser 'dados_estruturados' (missing 's')
+#  'dados_estruturado' deveria ser 'dados_estruturados' (missing 's')
 ```
 
 ---
 
-## ✅ Solução: Versão Corrigida
+##  Solução: Versão Corrigida
 
 ### Arquivo: `lambda_function_corrigida.py`
 
@@ -69,12 +69,12 @@ dados_estruturado['tipo_documento'] = 'Documento de Identidade'
 
 #### 1. **Remover Strands/Bedrock/Textract**
 ```python
-# ❌ Removido:
+#  Removido:
 from strands import Agent
 from strands.models import BedrockModel
 from strands.tools import tool
 
-# ✅ Mantido apenas:
+#  Mantido apenas:
 import boto3  # AWS SDK
 import json, re, uuid, datetime  # Stdlib
 ```
@@ -82,7 +82,7 @@ import json, re, uuid, datetime  # Stdlib
 #### 2. **Extração Simplificada**
 Em vez de usar Textract (OCR complexo):
 ```python
-# ✅ Nova função simples:
+#  Nova função simples:
 def extrair_texto_s3(bucket: str, key: str) -> str:
     """Lê arquivo TXT/JSON/CSV diretamente do S3"""
     response = s3_client.get_object(Bucket=bucket, Key=key)
@@ -92,7 +92,7 @@ def extrair_texto_s3(bucket: str, key: str) -> str:
 #### 3. **Estruturação com Regex**
 Em vez de usar Bedrock/Agent:
 ```python
-# ✅ Nova função que extrai campos com regex:
+#  Nova função que extrai campos com regex:
 def estruturar_dados(texto: str, metadata: dict) -> dict:
     """
     Procura por padrões:
@@ -116,18 +116,18 @@ processar_documento(bucket, key, metadata):
 
 ---
 
-## 📊 Comparação: Antes vs Depois
+##  Comparação: Antes vs Depois
 
-| Aspecto | ❌ Antes (Original) | ✅ Depois (Corrigida) |
+| Aspecto |  Antes (Original) |  Depois (Corrigida) |
 |---------|-------------------|----------------------|
 | **Dependências Externas** | Strands, Bedrock, Textract | Apenas boto3 (AWS SDK) |
 | **Complexidade** | Alta (Agent, Prompts, LLM) | Média (Regex, parsing) |
-| **Custo Free Tier** | ❌ Não qualificado | ✅ 100% Free Tier |
+| **Custo Free Tier** |  Não qualificado | 100% Free Tier |
 | **Tempo Setup** | 45-60 min | 15-20 min |
 | **Erros de Sintaxe** | 4+ | 0 |
 | **Tratamento de Erros** | Frágil | Robusto |
 | **Testabilidade** | Requer AWS + Bedrock Access | Local + Moto (mock) |
-| **Alinhamento Projeto** | ❌ Não | ✅ Sim |
+| **Alinhamento Projeto** |  Não |  Sim |
 
 ---
 
@@ -243,7 +243,7 @@ Adicionar permissões:
 
 ---
 
-## 🧪 Teste via Postman
+##  Teste via Postman
 
 ### URL
 ```
@@ -284,10 +284,10 @@ Body: {
 
 ---
 
-## ❌ Erros Comuns & Soluções
+##  Erros Comuns & Soluções
 
 | Erro | Causa | Solução |
-|------|-------|--------|
+|------|-------|---------|
 | `FileNotFoundError: [Errno 2] No such file or directory` | Arquivo não existe em S3 | Verificar bucket + key no S3 |
 | `ResourceNotFoundException` no DynamoDB | Tabela não existe | Criar tabela `sinistros_resultados` |
 | `AccessDeniedException` | Permissões insuficientes | Adicionar IAM policy à role |
@@ -297,7 +297,7 @@ Body: {
 
 ---
 
-## 📝 Checklist de Validação
+## Checklist de Validação
 
 - [ ] Código sem importações de Strands/Bedrock
 - [ ] Função `extrair_texto_s3()` funciona
@@ -312,14 +312,14 @@ Body: {
 
 ---
 
-## 🚀 Próximos Passos
+## Próximos Passos
 
-1. ✅ Usar `lambda_function_corrigida.py`
-2. ✅ Deploy na AWS Lambda
-3. ✅ Testar com Postman
-4. ✅ Integrar com API Gateway
-5. ✅ Criar vídeo de demonstração
-6. ✅ Apresentar para banca
+1. Usar `lambda_function_corrigida.py`
+2. Deploy na AWS Lambda
+3. Testar com Postman
+4. Integrar com API Gateway
+5. Criar vídeo de demonstração
+6. Apresentar para banca
 
 ---
 

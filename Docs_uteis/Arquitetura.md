@@ -1,408 +1,190 @@
-# Arquitetura — Sistema de Processamento de Documentos Sinistro
+# Arquitetura AWS - DocuSmart Seguros
 
-## Visão Geral
+## Sistema inteligente de analise de sinistros com AWS e IA
 
-![Arquitetura](../Frontend/assets/image/docsmartSeguros_arquitetura.png)
+![Arquitetura AWS Sinistros](Apresentacao/Arquitetura.png)
 
-Sistema serverless para automatizar o processamento de PDFs de sinistro, transformando documentos não-estruturados em dados estruturados através de uma pipeline AWS.
+Este documento descreve a arquitetura apresentada no material final do projeto DocuSmart Seguros. A imagem acima funciona como capa visual da arquitetura e resume o fluxo completo da solucao.
 
-```
-┌─────────────┐      ┌──────────────┐      ┌────────────┐      ┌──────────┐
-│   Cliente   │ ────→│ API Gateway  │ ────→│   Lambda   │ ────→│DynamoDB  │
-│  (Postman)  │      │  (REST API)  │      │(Processor) │      │(Dados)   │
-└─────────────┘      └──────────────┘      └────────────┘      └──────────┘
-                                                   ↓
-                                            ┌──────────────┐
-                                            │  CloudWatch  │
-                                            │   (Logs)     │
-                                            └──────────────┘
+---
+
+## 1. Visao Geral
+
+A solucao foi desenhada como uma arquitetura serverless para processar documentos de sinistro usando servicos gerenciados da AWS e inteligencia artificial generativa.
+
+O fluxo principal parte de um usuario que envia ou referencia um documento pelo frontend. A requisicao chega ao API Gateway, aciona uma Lambda orquestradora, utiliza Amazon Textract para extracao de texto e Amazon Bedrock para analise inteligente. Os documentos e resultados sao armazenados em S3 e DynamoDB, enquanto CloudWatch e IAM sustentam observabilidade e seguranca.
+
+---
+
+## 2. Fluxo de Alto Nivel
+
+```mermaid
+flowchart LR
+    A[Usuario] --> B[Site / Frontend]
+    B <--> C[API Gateway]
+    C <--> D[AWS Lambda Orquestradora]
+    D --> E[Amazon Textract]
+    D --> F[Amazon Bedrock]
+    E --> F
+    D --> G[Amazon S3]
+    G --> H[Amazon DynamoDB]
+    D --> H
+    D --> I[Amazon CloudWatch]
+    J[IAM] -. permissoes .-> D
+    J -. acesso .-> G
+    J -. acesso .-> E
+    J -. acesso .-> F
+    J -. acesso .-> H
 ```
 
 ---
 
-## Componentes da Arquitetura
+## 3. Componentes da Arquitetura
 
-### 1. API Gateway
-**Função**: Expor endpoint HTTP POST para receber requisições de processamento
+### 3.1 Usuario e Site / Frontend
 
-- **Tipo**: REST API
-- **Método**: POST
-- **Rota**: `/process-document`
-- **Entrada**: JSON com metadados do documento
-- **Saída**: JSON com ID de processamento
-- **Autenticação**: Sem autenticação (apenas para MVP)
-- **CORS**: Habilitado para testes via Postman
+O usuario acessa a interface DocuSmart Seguros para enviar documentos e visualizar resultados.
 
-**Modelo de Requisição:**
+Responsabilidades:
+
+- Permitir upload ou selecao do documento.
+- Exibir status de processamento.
+- Apresentar os campos estruturados retornados pela API.
+- Apoiar a demonstracao visual da solucao.
+
+No diagrama, essa camada representa a entrada do fluxo e a visualizacao final da resposta.
+
+### 3.2 API Gateway
+
+O API Gateway e o ponto de entrada da aplicacao.
+
+Responsabilidades:
+
+- Expor endpoint REST para o frontend ou ferramentas de teste.
+- Receber a requisicao de processamento.
+- Encaminhar a chamada para a Lambda.
+- Padronizar a comunicacao HTTP entre cliente e backend.
+
+Exemplo de entrada esperada:
+
 ```json
 {
-  "fileName": "sinistro_20260617_001.pdf",
-  "documentType": "sinistro",
+  "bucket": "sinistros-upload",
+  "key": "documentos/boletim-ocorrencia.pdf",
   "metadata": {
-    "claimNumber": "SC2026001",
-    "claimDate": "2026-06-17",
-    "customerName": "João Silva"
+    "origem": "frontend",
+    "tipo_esperado": "sinistro"
   }
 }
 ```
 
-**Modelo de Resposta:**
-```json
-{
-  "status": "success",
-  "processId": "proc_123abc456",
-  "message": "Documento enviado para processamento",
-  "estimatedTime": "30 segundos"
-}
+### 3.3 AWS Lambda Orquestradora
+
+A Lambda e o componente central da arquitetura. Ela coordena todo o processamento.
+
+Responsabilidades:
+
+- Receber a requisicao do API Gateway.
+- Validar parametros de entrada.
+- Salvar ou localizar o documento no S3.
+- Acionar OCR com Amazon Textract.
+- Enviar o texto extraido para analise com Amazon Bedrock.
+- Estruturar o resultado em JSON.
+- Persistir o resultado no DynamoDB.
+- Retornar a resposta ao frontend.
+- Gerar logs de execucao para o CloudWatch.
+
+No diagrama da apresentacao, a Lambda aparece como **orquestradora** porque coordena OCR, IA generativa, armazenamento e resposta.
+
+### 3.4 Servicos de Processamento
+
+#### Amazon Textract
+
+O Textract realiza a leitura automatica dos documentos.
+
+Responsabilidades:
+
+- Extrair texto de PDFs, JPGs e PNGs.
+- Ler conteudo por OCR.
+- Identificar dados, formularios e tabelas quando aplicavel.
+- Entregar texto bruto ou semiestruturado para a etapa de IA.
+
+#### Amazon Bedrock / Amazon Nova
+
+O Bedrock fornece a camada de inteligencia artificial generativa.
+
+Responsabilidades:
+
+- Analisar o texto extraido do documento.
+- Classificar o tipo de documento.
+- Gerar resumo da ocorrencia.
+- Extrair campos em formato estruturado.
+- Normalizar a resposta em JSON.
+- Apoiar insights para analise de sinistros.
+
+Essa camada atende diretamente ao criterio de uso de GenAI AWS no projeto.
+
+### 3.5 Armazenamento
+
+#### Amazon S3
+
+O S3 armazena os documentos originais enviados para processamento.
+
+Responsabilidades:
+
+- Guardar arquivos PDF, JPG e PNG.
+- Manter documentos disponiveis para a Lambda e o Textract.
+- Oferecer alta disponibilidade e escalabilidade.
+- Servir como repositorio de entrada do fluxo.
+
+Nome usado no diagrama:
+
+```text
+sinistros-upload
 ```
 
----
+#### Amazon DynamoDB
 
-### 2. S3 (Simple Storage Service)
-**Função**: Armazenar arquivos PDF enviados pelos usuários
+O DynamoDB armazena os resultados estruturados da analise.
 
-- **Bucket**: `sinistro-docs-hack2hire-2026`
-- **Estrutura de pastas**:
-  ```
-  sinistro-docs-hack2hire-2026/
-  ├── incoming/          # PDFs aguardando processamento
-  ├── processed/         # PDFs já processados
-  └── rejected/          # PDFs com erro
-  ```
-- **Versionamento**: Desabilitado (não necessário para MVP)
-- **Encriptação**: KMS (AWS managed)
-- **Lifecycle Policy**: Limpar arquivos rejeitados após 30 dias
+Responsabilidades:
 
-**Permissões**:
-- Lambda: Ler/escrever em `incoming/` e `processed/`
-- Usuários: Apenas leitura em `processed/` (via API)
+- Persistir os dados extraidos do documento.
+- Armazenar status, resumo, campos e identificadores.
+- Permitir consultas rapidas.
+- Manter a rastreabilidade dos processamentos.
 
----
-
-### 3. Lambda
-**Função**: Processador central — ler PDF, extrair dados, validar, armazenar
-
-#### 3.1 Fluxo de Execução
-
-```
-1. Receber evento do API Gateway
-   ↓
-2. Validar entrada (JSON schema)
-   ↓
-3. Copiar PDF de entrada para S3
-   ↓
-4. Ler arquivo PDF do S3
-   ↓
-5. Extrair texto/dados brutos
-   ↓
-6. Parsear e estruturar dados
-   ↓
-7. Validar qualidade dos dados
-   ↓
-8. Salvar resultado em DynamoDB
-   ↓
-9. Registrar sucesso em CloudWatch
-   ↓
-10. Retornar resultado ao cliente
-```
-
-#### 3.2 Configuração
-
-- **Runtime**: Python 3.12
-- **Timeout**: 120 segundos (2 min)
-- **Memory**: 512 MB (ajustar conforme necessário)
-- **Variáveis de Ambiente**:
-  ```
-  DYNAMODB_TABLE_NAME=sinistros_resultados
-  S3_BUCKET_NAME=sinistro-docs-hack2hire-2026
-  AWS_REGION=us-east-1
-  ```
-
-#### 3.3 Dependências
-
-```
-boto3==1.28.0        # SDK AWS
-PyPDF2==3.0.1        # Leitura de PDFs
-python-dotenv==1.0.0 # Variáveis de ambiente
-```
-
-#### 3.4 Pseudocódigo
-
-```python
-def lambda_handler(event, context):
-    """
-    Processa documento sinistro enviado via API Gateway
-    """
-    try:
-        # 1. Parsear entrada
-        body = json.loads(event['body'])
-        file_name = body['fileName']
-        document_type = body['documentType']
-        metadata = body['metadata']
-        
-        # 2. Validar
-        if not file_name or not document_type:
-            return error_response(400, "Dados incompletos")
-        
-        # 3. Gerar ID único
-        process_id = generate_id()
-        
-        # 4. Criar entrada em DynamoDB
-        dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table(os.getenv('DYNAMODB_TABLE_NAME'))
-        
-        table.put_item(Item={
-            'processId': process_id,
-            'fileName': file_name,
-            'status': 'PROCESSING',
-            'createdAt': datetime.now().isoformat(),
-            'metadata': metadata
-        })
-        
-        # 5. Ler PDF do S3
-        s3 = boto3.client('s3')
-        response = s3.get_object(
-            Bucket=os.getenv('S3_BUCKET_NAME'),
-            Key=f"incoming/{file_name}"
-        )
-        pdf_content = response['Body'].read()
-        
-        # 6. Extrair dados
-        pdf_data = extract_pdf_data(pdf_content)
-        
-        # 7. Validar dados
-        if not validate_data(pdf_data):
-            update_status(process_id, 'FAILED', 'Dados inválidos')
-            return error_response(400, "Falha na validação")
-        
-        # 8. Atualizar resultado
-        table.update_item(
-            Key={'processId': process_id},
-            UpdateExpression='SET #status = :status, #data = :data, #updated = :updated',
-            ExpressionAttributeNames={
-                '#status': 'status',
-                '#data': 'extractedData',
-                '#updated': 'updatedAt'
-            },
-            ExpressionAttributeValues={
-                ':status': 'COMPLETED',
-                ':data': pdf_data,
-                ':updated': datetime.now().isoformat()
-            }
-        )
-        
-        # 9. Mover arquivo processado
-        s3.copy_object(
-            CopySource=f"{os.getenv('S3_BUCKET_NAME')}/incoming/{file_name}",
-            Bucket=os.getenv('S3_BUCKET_NAME'),
-            Key=f"processed/{file_name}"
-        )
-        
-        # 10. Log de sucesso
-        print(f"Processamento bem-sucedido: {process_id}")
-        
-        return success_response(200, {
-            'processId': process_id,
-            'status': 'COMPLETED',
-            'dataExtracted': pdf_data
-        })
-        
-    except Exception as e:
-        print(f"Erro: {str(e)}")
-        return error_response(500, str(e))
-```
-
----
-
-### 4. DynamoDB
-**Função**: Armazenar registros estruturados de documentos processados
-
-#### 4.1 Tabela: `sinistros_resultados`
-
-| Atributo | Tipo | Descrição | Chave |
-|----------|------|-----------|-------|
-| `processId` | String | ID único do processamento | Primária |
-| `fileName` | String | Nome do arquivo PDF original | - |
-| `status` | String | PROCESSING, COMPLETED, FAILED | - |
-| `extractedData` | Map | Dados extraídos do PDF | - |
-| `metadata` | Map | Metadados da requisição | - |
-| `createdAt` | String | Timestamp de criação | GSI |
-| `updatedAt` | String | Timestamp da última atualização | - |
-| `error` | String | Mensagem de erro (se houver) | - |
-
-#### 4.2 Configuração
-
-- **Billing Mode**: PAY_PER_REQUEST (sem necessidade de capacity provisioning)
-- **TTL**: 90 dias (cleanup automático de registros antigos)
-- **GSI (Global Secondary Index)**:
-  - `createdAt`: Para queries por data
-  - `status`: Para queries por status
-
-#### 4.3 Exemplo de Item
+Exemplo de item salvo:
 
 ```json
 {
-  "processId": "proc_20260617_001",
-  "fileName": "sinistro_20260617_001.pdf",
-  "status": "COMPLETED",
-  "extractedData": {
-    "claimNumber": "SC2026001",
-    "claimDate": "2026-06-17",
-    "customerName": "João Silva",
-    "claimAmount": "15000.00",
-    "claimType": "Sinistro de Veículo",
-    "description": "Colisão frontal em semáforo"
+  "id": "sin-001",
+  "tipo_documento": "Boletim de Ocorrencia",
+  "status": "processado",
+  "campos_extraidos": {
+    "data": "2026-06-15",
+    "local": "Av. Paulista, 1000",
+    "valor_prejuizo": "R$ 4.500,00",
+    "envolvidos": ["Joao Silva", "Maria Souza"]
   },
-  "metadata": {
-    "claimNumber": "SC2026001",
-    "claimDate": "2026-06-17",
-    "customerName": "João Silva"
-  },
-  "createdAt": "2026-06-17T14:32:00Z",
-  "updatedAt": "2026-06-17T14:32:45Z"
+  "resumo": "Acidente de transito com dois veiculos, sem vitimas fatais.",
+  "processado_em": "2026-06-16T10:30:00Z"
 }
 ```
 
----
+### 3.6 Permissoes IAM
 
-### 5. CloudWatch
-**Função**: Monitoramento, logs e métricas
+O IAM controla as permissoes usadas pela Lambda para acessar os demais servicos.
 
-#### 5.1 Log Groups
+A Lambda precisa de permissoes para:
 
-- **Log Group**: `/aws/lambda/analisar-sinistro`
-  - Captura todos os logs da função Lambda
-  - Retenção: 7 dias (ajustável)
+- Ler e gravar documentos no Amazon S3.
+- Invocar o Amazon Textract.
+- Invocar modelos no Amazon Bedrock.
+- Ler e gravar dados no Amazon DynamoDB.
+- Enviar logs para o Amazon CloudWatch.
 
-#### 5.2 Métricas
-
-| Métrica | Descrição |
-|---------|-----------|
-| `Invocations` | Total de chamadas à Lambda |
-| `Duration` | Tempo médio de processamento |
-| `Errors` | Contagem de erros |
-| `Throttles` | Vezes que Lambda foi throttled |
-| `ConcurrentExecutions` | Execuções simultâneas |
-
-#### 5.3 Alarmes (Recomendado)
-
-```
-- Erro rate > 5%: Enviar notificação
-- Duration média > 60s: Alertar para ajuste de memory
-- Throttles > 0: Aumentar capacity
-```
-
----
-
-## Fluxo de Dados Completo
-
-```
-ENTRADA                    PROCESSAMENTO                    SAÍDA
-═══════════════════════════════════════════════════════════════════════════
-
-Cliente (Postman)
-    │
-    └─→ POST /process-document
-           (JSON metadata)
-               │
-               ↓
-        API Gateway
-               │
-               └─→ Validação de entrada
-                      │
-                      ↓
-               Lambda Trigger
-                      │
-                      ├─→ Gerar processId
-                      │
-                      ├─→ Criar item em DynamoDB
-                      │     (status: PROCESSING)
-                      │
-                      ├─→ Ler PDF do S3
-                      │
-                      ├─→ Extrair dados/texto
-                      │
-                      ├─→ Validar campos obrigatórios
-                      │
-                      ├─→ Atualizar DynamoDB
-                      │     (status: COMPLETED + dados)
-                      │
-                      ├─→ Mover PDF para pasta "processed"
-                      │
-                      └─→ Log em CloudWatch
-                             │
-                             ↓
-                      DynamoDB + CloudWatch + S3
-                             │
-                             ↓
-                      Resposta ao cliente
-                      (JSON com processId)
-```
-
----
-
-## Processos de Tratamento de Erros
-
-### Validação de Entrada
-
-```
-IF fileName NOT provided THEN
-  → Return 400: "fileName obrigatório"
-
-IF documentType NOT IN ['sinistro', 'documento', ...] THEN
-  → Return 400: "documentType inválido"
-
-IF metadata empty THEN
-  → Return 400: "metadata obrigatório"
-```
-
-### Erro ao Ler PDF
-
-```
-IF S3 GetObject fails THEN
-  → Update DynamoDB: status='FAILED', error='Arquivo não encontrado'
-  → Return 500: "Falha ao processar documento"
-  → Log em CloudWatch com stack trace
-```
-
-### Erro ao Processar Dados
-
-```
-IF PDF parser fails THEN
-  → Update DynamoDB: status='FAILED', error='PDF corrompido ou ilegível'
-  → Move arquivo para pasta "rejected"
-  → Log em CloudWatch
-  → Return 400: "Não foi possível extrair dados"
-
-IF validation fails THEN
-  → Update DynamoDB: status='FAILED', error='Dados incompletos'
-  → Salvar dados brutos em campo "rawData"
-  → Log em CloudWatch
-  → Return 400: "Validação falhou"
-```
-
-### Retry Logic (Recomendado)
-
-```
-MAX_RETRIES = 3
-
-FOR attempt IN 1..MAX_RETRIES:
-  TRY:
-    process_document()
-  CATCH transient_error:
-    IF attempt < MAX_RETRIES THEN
-      WAIT 2^attempt seconds  # exponential backoff
-      CONTINUE
-    ELSE
-      Update DynamoDB: status='FAILED', error='Max retries exceeded'
-      BREAK
-```
-
----
-
-## Segurança e Permissões
-
-### IAM Policy para Lambda
+Politica conceitual:
 
 ```json
 {
@@ -410,175 +192,157 @@ FOR attempt IN 1..MAX_RETRIES:
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:CopyObject"
-      ],
-      "Resource": "arn:aws:s3:::sinistro-docs-hack2hire-2026/*"
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::sinistros-upload/*"
     },
     {
       "Effect": "Allow",
-      "Action": [
-        "dynamodb:PutItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:GetItem",
-        "dynamodb:Query"
-      ],
-      "Resource": "arn:aws:dynamodb:us-east-1:*:table/sinistros_resultados"
+      "Action": ["textract:DetectDocumentText", "textract:AnalyzeDocument"],
+      "Resource": "*"
     },
     {
       "Effect": "Allow",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:us-east-1:*:log-group:/aws/lambda/*"
+      "Action": ["bedrock:InvokeModel"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:Query", "dynamodb:Scan"],
+      "Resource": "arn:aws:dynamodb:us-east-1:*:table/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "*"
     }
   ]
 }
 ```
 
-### Encriptação
+Em uma versao produtiva, os recursos devem ser restringidos para ARNs especificos de bucket, tabela e modelo.
 
-- **S3**: Encriptação padrão com chaves AWS-managed
-- **DynamoDB**: Encriptação com KMS (AWS-managed)
-- **Comunicação**: HTTPS/TLS para API Gateway
+### 3.7 Observabilidade e Monitoramento
 
-### Autenticação (Futura)
+O Amazon CloudWatch centraliza logs e sinais operacionais da solucao.
 
-Para produção, adicionar:
-- API Key na API Gateway
-- IAM roles por aplicação cliente
-- Rate limiting para prevenir abuso
+Responsabilidades:
 
----
+- Registrar logs da Lambda.
+- Acompanhar erros de processamento.
+- Medir duracao e quantidade de invocacoes.
+- Apoiar alarmes e notificacoes.
+- Facilitar depuracao durante testes e demonstracao.
 
-## Escalabilidade
+Metricas recomendadas:
 
-### Lambda
-- **Concorrência**: 1000 execuções simultâneas (padrão AWS)
-- **Timeout**: 15 minutos máximo
-- **Memory**: Escala de 128 MB a 10.240 MB
-
-**Para mais load**:
-```
-→ Aumentar memory para melhorar CPU
-→ Usar DynamoDB on-demand (já configurado)
-→ Implementar fila SQS para processamento assíncrono
-```
-
-### DynamoDB (On-Demand)
-- **Read/Write**: Escala automaticamente conforme demanda
-- **Custo**: Paga por item processado
-- **Latência**: Típicamente <10ms para gets
-
-**Padrão de Query Recomendado**:
-```
-Query por processId (primary key) → O(1)
-Query por status → Use GSI
-Query por data → Use GSI createdAt
-```
-
-### S3
-- **Escalabilidade**: Ilimitada (por design)
-- **Latência**: <100ms típicamente
-- **Throughput**: 3.500 PUT/DELETE por segundo por prefix
+| Metrica | Objetivo |
+|---|---|
+| Invocations | Medir volume de requisicoes processadas. |
+| Errors | Identificar falhas na Lambda. |
+| Duration | Acompanhar tempo medio de processamento. |
+| Throttles | Verificar limitacoes de concorrencia. |
+| Logs por processo | Rastrear cada documento analisado. |
 
 ---
 
-## Endpoints e URLs
+## 4. Fluxo de Funcionamento
 
-| Serviço | Tipo | Endpoint |
-|---------|------|----------|
-| API Gateway | HTTP | `https://<api-id>.execute-api.us-east-1.amazonaws.com/prod/process-document` |
-| Lambda | AWS Console | `https://console.aws.amazon.com/lambda/home?region=us-east-1` |
-| DynamoDB | AWS Console | `https://console.aws.amazon.com/dynamodbv2/home?region=us-east-1` |
-| S3 | AWS Console | `https://console.aws.amazon.com/s3/home?region=us-east-1` |
-| CloudWatch Logs | AWS Console | `https://console.aws.amazon.com/cloudwatch/home?region=us-east-1` |
+O fluxo apresentado no diagrama segue sete etapas principais:
+
+1. O usuario envia um documento pelo site.
+2. A requisicao chega ao API Gateway.
+3. A Lambda recebe a chamada e orquestra o processamento.
+4. O documento e salvo ou localizado no Amazon S3.
+5. Amazon Textract e Amazon Bedrock analisam o documento.
+6. O resultado estruturado e salvo no DynamoDB.
+7. A resposta e retornada ao usuario no frontend.
 
 ---
 
-## Diagrama Detalhado (Mermaid)
+## 5. Contrato de Resposta
 
-```mermaid
-graph TD
-    A["Cliente (Postman)"] -->|POST /process-document| B["API Gateway"]
-    B -->|Validar JSON| C{Válido?}
-    C -->|Não| D["Return 400"]
-    C -->|Sim| E["Invocar Lambda"]
-    
-    E -->|1. Gerar processId| F["DynamoDB"]
-    F -->|PutItem: status=PROCESSING| G["Item Criado"]
-    
-    E -->|2. Ler PDF| H["S3"]
-    H -->|GetObject| I{Arquivo Existe?}
-    I -->|Não| J["Update: status=FAILED"]
-    I -->|Sim| K["PDF Content"]
-    
-    K -->|3. Extrair Dados| L["PDF Parser"]
-    L -->|Estruturar JSON| M{Dados Válidos?}
-    M -->|Não| N["Update: status=FAILED"]
-    M -->|Sim| O["Dados Estruturados"]
-    
-    O -->|4. Salvar| P["DynamoDB"]
-    P -->|UpdateItem: status=COMPLETED| Q["Item Atualizado"]
-    
-    O -->|5. Mover arquivo| R["S3"]
-    R -->|CopyObject to processed/| S["Arquivo Movido"]
-    
-    Q -->|6. Log| T["CloudWatch"]
-    T -->|Métricas + Eventos| U["Monitoramento"]
-    
-    Q -->|Return Result| V["Response 200"]
-    J -->|Return Error| W["Response 500"]
-    N -->|Return Error| W
-    
-    V -->|JSON com resultado| A
-    W -->|JSON com erro| A
+A resposta da API deve ser simples, estruturada e adequada para exibicao no frontend.
+
+```json
+{
+  "status": "processado",
+  "id": "sin-001",
+  "arquivo": "boletim-ocorrencia.pdf",
+  "resultado": {
+    "tipo_documento": "Boletim de Ocorrencia",
+    "resumo": "Acidente de transito com dois veiculos, sem vitimas fatais.",
+    "campos_extraidos": {
+      "data": "2026-06-15",
+      "local": "Av. Paulista, 1000",
+      "valor_prejuizo": "R$ 4.500,00",
+      "envolvidos": ["Joao Silva", "Maria Souza"]
+    }
+  }
+}
 ```
 
 ---
 
-## Próximas Etapas (Evolução)
+## 6. Beneficios da Arquitetura
 
-### MVP+1: Fila de Processamento
-```
-Postman → API Gateway → SQS → Lambda Consumer → DynamoDB
-```
-**Benefício**: Processamento assíncrono, melhor escalabilidade
+### Automacao do processo de analise
 
-### MVP+2: Busca e Consultas
-```
-Novo Endpoint: GET /documents/{processId}
-Novo Endpoint: GET /documents?status=COMPLETED&date=2026-06-17
-```
-**Benefício**: Recuperar resultados via API
+O fluxo reduz leitura manual e acelera a triagem inicial dos documentos.
 
-### MVP+3: Dashboard
-```
-CloudWatch Dashboards → Métricas em tempo real
-QuickSight → BI e relatórios
-```
-**Benefício**: Visualização de performance
+### Reducao do tempo de resposta
 
----
+Lambda, Textract e Bedrock permitem processar documentos sob demanda, sem servidores dedicados.
 
-## Checklist de Implementação
+### Analise mais precisa
 
-- [ ] Criar tabela DynamoDB (`sinistros_resultados`)
-- [ ] Criar bucket S3 (`sinistro-docs-hack2hire-2026`)
-- [ ] Criar função Lambda (`analisar-sinistro`)
-- [ ] Criar API Gateway com rota POST
-- [ ] Configurar IAM role para Lambda
-- [ ] Implementar código de processamento em Python
-- [ ] Testar Lambda via console AWS
-- [ ] Testar API Gateway via Postman
-- [ ] Configurar CloudWatch logs e métricas
-- [ ] Documentar erro handling
-- [ ] Deploy em ambiente de teste
+OCR combinado com IA generativa melhora a classificacao e a estruturacao dos dados.
+
+### Geracao de pareceres automaticos
+
+O modelo pode resumir o documento e destacar informacoes relevantes para a equipe de sinistros.
+
+### Alta disponibilidade e escala com AWS
+
+S3, Lambda, DynamoDB e API Gateway sao servicos gerenciados e escalaveis.
+
+### Seguranca e rastreabilidade dos dados
+
+IAM define permissoes de acesso e CloudWatch registra eventos importantes do fluxo.
 
 ---
 
-**Arquitetura versão 1.0 — Hack2Hire 2026** 🚀
+## 7. Decisoes de Arquitetura
+
+| Decisao | Justificativa |
+|---|---|
+| Usar API Gateway como entrada | Facilita integracao com frontend e testes via Postman. |
+| Usar Lambda como orquestradora | Mantem a solucao serverless e centraliza o fluxo de processamento. |
+| Usar Textract para OCR | Permite ler documentos reais em PDF ou imagem. |
+| Usar Bedrock / Nova para IA | Atende ao criterio de GenAI AWS e melhora a interpretacao dos dados. |
+| Usar S3 para documentos | Armazenamento simples, duravel e escalavel. |
+| Usar DynamoDB para resultados | Baixa latencia e modelo flexivel para JSON estruturado. |
+| Usar CloudWatch | Garante observabilidade minima para testes e demonstracao. |
+| Usar IAM | Aplica controle de acesso entre Lambda e servicos AWS. |
+
+---
+
+## 8. Evolucoes Futuras
+
+Possiveis melhorias depois do MVP:
+
+- Adicionar Amazon SQS para processamento assincrono.
+- Criar Step Functions para orquestracao visual e retries controlados.
+- Adicionar Amazon Cognito ou API Key para autenticacao.
+- Criar dashboard com metricas de volume, tempo medio e erros.
+- Implementar revisao humana para casos de baixa confianca.
+- Adicionar busca semantica sobre documentos processados.
+- Restringir politicas IAM para recursos especificos.
+- Criar infraestrutura como codigo para reproducao do ambiente.
+
+---
+
+## 9. Conclusao
+
+A arquitetura do DocuSmart Seguros combina frontend, API Gateway, Lambda, Textract, Bedrock, S3, DynamoDB, IAM e CloudWatch para criar uma solucao serverless de analise inteligente de documentos de sinistro.
+
+O desenho atende ao Case C por usar agentes e inteligencia generativa em uma rotina operacional real, mantendo uma estrutura clara para demonstracao, persistencia dos resultados e evolucao futura.

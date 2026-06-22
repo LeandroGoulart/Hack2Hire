@@ -1,519 +1,222 @@
-# 📊 Proposta Case C: Soluções Operacionais com Strands Agents
+# Analise da Proposta - Case C
 
-## Documento de Propostas para Rotinas Reais em Ambientes Corporativos
+## DocuSmart Seguros - Processamento Inteligente de Documentos de Sinistro
 
-**Data:** 16 de junho de 2026  
-**Evento:** Hack2Hire - Escola de Nuvem (EDN) + AWS
-
----
-
-## Resumo Executivo
-
-Este documento foca no **Case C** e apresenta três propostas de solução para um cenário operacional real. O objetivo é criar um material técnico e de produto voltado para rotinas internas de uma empresa: recepção de documentos, classificação de sinistros, extração de dados, registro de processos e apoio à decisão.
-
-### O que será apresentado
-- Problema comum em operações corporativas
-- Alternativas técnicas para o mesmo case
-- Rotinas que acontecem dentro da organização
-- Ferramentas e arquitetura propostas
-- Critérios de escolha para cada perfil de equipe
-
-### Índice
-1. ✅ Proposta 1: Operação Básica com Strands e Extração Automática
-2. ⚠️ Proposta 2: Operação Corporativa com Persistência e Auditoria
-3. 🚀 Proposta 3: Solução Avançada com Monitoramento e Q&A
+**Evento:** Hack2Hire - Escola da Nuvem + AWS  
+**Equipe:** Grupo 10  
+**Case:** Case C - Solucoes operacionais com Strands Agents  
+**Status da proposta:** proposta definida, apresentacao concluida e videos de demonstracao realizados
 
 ---
 
-## 1️⃣ PROPOSTA 1: Operação Básica com Strands e Extração Automática
+## 1. Resumo Executivo
 
-### 🎯 Descrição
-- **Contexto:** Case C como solução para rotinas de entrada de documentos em uma central de sinistros ou análise documental.
-- **Objetivo:** transformar documentos recebidos em dados estruturados com mínimo esforço operacional.
-- **Stack:** Python + Strands Agents SDK + Amazon Textract + Amazon Bedrock + AWS Lambda.
+A proposta escolhida para o Case C e a construcao de uma solucao serverless para automatizar a analise de documentos de sinistro. A solucao recebe documentos como boletins de ocorrencia, notas fiscais e laudos, extrai o conteudo com OCR, utiliza inteligencia generativa para classificar e estruturar as informacoes, e registra o resultado em formato padronizado para consulta e auditoria.
 
-### 📋 Escopo Operacional
-- Recepção de documentos (PDFs, imagens) via upload ou S3.
-- Disparo automático de processo quando o arquivo chega.
-- Classificação do tipo de documento.
-- Extração dos campos principais (data, valor, partes envolvidas, descrição).
-- Geração de JSON padronizado para sistemas downstream.
-- Envio de resultado para uma fila de análise humana ou outro sistema de workflow.
+O projeto foi apresentado como **DocuSmart Seguros**, uma plataforma de apoio a equipes de sinistros que precisam reduzir retrabalho manual, acelerar a triagem documental e tornar os dados extraidos mais confiaveis para tomada de decisao.
 
-### 🔧 Ferramentas Principais
+A proposta se apoia diretamente em servicos AWS gerenciados e em recursos de GenAI:
 
-| Ferramenta | Função |
-|------------|--------|
-| **Strands Agents SDK** | Orquestração inteligente do fluxo com tools definidas |
-| **Amazon Textract** | OCR e extração de texto básico |
-| **Amazon Bedrock** | Modelo LLM para decisão e normalização |
-| **Amazon S3** | Armazenamento de documentos e resultados |
-| **AWS Lambda** | Execução do handler e do agente |
-| **Amazon DynamoDB** | Armazenamento simples de metadados e status |
-
-### ✅ Vantagens
-- **Entrega rápida:** solução MVP montada com poucas integrações.
-- **Baixo risco:** fluxo simples, ideal para protótipo de hackathon.
-- **Foco operacional:** resolve a rotina de entrada de documentos imediatamente.
-- **Menos coordenação:** Strands cuida da lógica de orquestração.
-
-### ❌ Limitações
-- **Menos governança:** histórico de processo reduzido.
-- **Sem interface final:** resultado é JSON, não há dashboard imediato.
-- **Funções de negócio limitadas:** não há suporte nativo para revisões ou aprovação humana.
-- **Poder analítico restrito:** não oferece consulta semântica nem painel gerencial.
-
-### 📊 Complexidade Técnica
-```
-Curva de aprendizado:     ███░░░░░░░  (30%)
-Configuração AWS:         ██░░░░░░░░  (20%)
-Implementação Python:     ███░░░░░░░  (30%)
-Debugging:                ██░░░░░░░░  (20%)
-Entregáveis de qualidade: ███░░░░░░  (40%)
-```
-
-### ⏱️ Quando usar esta proposta
-- Equipe pequena com prazo curto.
-- Quer provar rapidamente que Case C funciona.
-- Precisa de um MVP operacional simples.
-- Deseja mostrar automação de rotina sem construir UI.
+- **Strands Agents SDK** para orquestrar o fluxo inteligente.
+- **Amazon Textract** para extracao de texto de documentos.
+- **Amazon Bedrock / Amazon Nova** para classificacao, normalizacao e estruturacao dos dados.
+- **AWS Lambda** para execucao serverless.
+- **Amazon S3** para armazenamento dos documentos.
+- **Amazon DynamoDB** para persistencia dos resultados.
+- **Amazon API Gateway** para exposicao do endpoint de processamento.
+- **Amazon CloudWatch** para logs, rastreabilidade e acompanhamento tecnico.
 
 ---
 
-## 2️⃣ PROPOSTA 2: Operação Corporativa com Persistência e Auditoria
+## 2. Problema de Negocio
 
-### 🎯 Descrição
-- **Contexto:** Case C aplicado a uma operação real de sinistros, onde o processo deve suportar controle, histórico e visibilidade para analistas e gestores.
-- **Objetivo:** transformar o fluxo de documentos em um processo empresarial robusto, com registro de etapas, validação e consulta.
-- **Stack:** Python + Strands Agents SDK + Amazon Textract + Amazon Bedrock + AWS Lambda + DynamoDB + API Gateway + Step Functions.
+Empresas de seguros recebem grande volume de documentos relacionados a sinistros. Esses documentos chegam em formatos variados e exigem leitura manual para identificar informacoes como tipo de documento, data, local, valor estimado, envolvidos e resumo da ocorrencia.
 
-### 📋 Escopo Operacional
-- Ingestão de documentos em lote ou individual, via upload ou S3.
-- Triagem automática e classificação de tipo de documento.
-- Extração e normalização de campos críticos.
-- Persistência de casos em DynamoDB com status e logs.
-- API de consulta para equipes de atendimento e operação.
-- Notificação de exceções e encaminhamento para revisão humana.
+Esse processo manual gera alguns impactos:
 
-### 🔧 Ferramentas Principais
+- Alto tempo de triagem inicial.
+- Risco de erro na digitacao ou interpretacao dos dados.
+- Dificuldade para manter historico estruturado dos casos.
+- Baixa rastreabilidade sobre o que foi processado.
+- Dependencia de analistas para tarefas repetitivas.
 
-| Ferramenta | Função |
-|------------|--------|
-| **Strands Agents SDK** | Orquestração inteligente e decisão de ferramentas |
-| **Amazon Textract** | OCR e extração de texto estruturado |
-| **Amazon Bedrock** | Normalização de texto e verificação contextual |
-| **AWS Lambda** | Execução serverless do fluxo |
-| **Amazon DynamoDB** | Registro de casos e histórico operacional |
-| **Amazon API Gateway** | Interface de consulta e ingestão |
-| **AWS Step Functions** | Controle de processo e retries |
-| **Amazon CloudWatch** | Monitoramento e alertas |
-
-### ✅ Vantagens
-- **Auditabilidade:** cada caso tem histórico e status rastreável.
-- **Visibilidade operacional:** APIs permitem acompanhar o fluxo.
-- **Resiliência:** retries e tratamento de erros alinhados a processos reais.
-- **Modelagem corporativa:** atende back office, compliance e análise de sinistros.
-
-### ❌ Limitações
-- **Maior complexidade:** envolve mais componentes e integrações.
-- **Tempo de entrega:** mais custoso que um MVP básico.
-- **Mais custo operacional:** inclui DynamoDB, Step Functions e monitoramento.
-- **Ainda sem front-end completo:** há interface de consulta, mas não dashboard avançado.
-
-### 📊 Complexidade Técnica
-```
-Curva de aprendizado:     █████░░░░░  (50%)
-Configuração AWS:         █████░░░░░  (50%)
-Implementação Python:     █████░░░░░  (50%)
-Debugging:                █████░░░░░  (50%)
-Entregáveis de qualidade: █████░░░░░  (50%)
-```
-
-### 🎯 Arquitetura
-```
-Upload / API → S3 → Lambda → Strands Agent → Textract / Bedrock
-                                         ↓
-                                     DynamoDB
-                                         ↓
-                                 Step Functions
-                                         ↓
-                               API Gateway / CloudWatch
-```
-
-### ⏱️ Quando usar esta proposta
-- Há necessidade de apresentar o case como solução corporativa.
-- O projeto deve mostrar governança e controle operacional.
-- A equipe tem capacidade para integrar múltiplos serviços.
-- Deseja demonstrar processo, histórico e consulta de casos.
+O Case C pede uma solucao aplicavel a rotinas operacionais reais. Por isso, o foco do DocuSmart e automatizar a entrada documental e entregar dados estruturados para que a equipe humana atue com mais velocidade e qualidade.
 
 ---
 
-## 3️⃣ PROPOSTA 3: Solução Avançada com Monitoramento e Q&A
+## 3. Solucao Proposta
 
-### 🎯 Descrição
-- **Contexto:** Case C como solução de operação inteligente que vai além da extração e entrega suporte à análise e controle.
-- **Objetivo:** combinar automação de documentos com consulta inteligente e visibilidade gerencial.
-- **Stack:** Strands Agents SDK + Amazon Textract + Amazon Bedrock + DynamoDB + API Gateway + OpenSearch/Vector Store + QuickSight.
+A solucao implementa um fluxo de processamento de documentos com GenAI AWS. O usuario informa o documento a ser analisado, a Lambda busca o arquivo no S3, o Textract extrai o texto, o agente orquestrado com Strands envia o conteudo ao modelo no Bedrock, e o resultado final e salvo no DynamoDB.
 
-### 📋 Escopo Operacional
-- Processamento automatizado de documentos e geração de JSON.
-- Registro completo do fluxo e indicadores de qualidade.
-- Exposição de API para consulta gerencial de casos.
-- Motor de pesquisa semântica para perguntas sobre sinistros.
-- Dashboard simples com métricas de volume, tempo e taxa de aprovação.
+O retorno esperado segue um JSON padronizado:
 
-### 🔧 Ferramentas Principais
-
-| Ferramenta | Função |
-|------------|--------|
-| **Amazon OpenSearch / S3 Vector Store** | Busca semântica e RAG |
-| **Amazon QuickSight** | Dashboard de operação |
-| **Amazon DynamoDB** | Histórico e metadata |
-| **Amazon API Gateway** | Interface de consulta |
-| **Strands Agents SDK** | Orquestração inteligente |
-| **Amazon Bedrock** | Normalização e resposta a perguntas |
-
-### ✅ Vantagens
-- **Diferencial alto:** traz inteligência e consulta no mesmo case.
-- **Maior impacto:** convence avaliadores com dashboard e pesquisa inteligente.
-- **Suporte decisório:** negócio consegue responder perguntas operacionais rapidamente.
-- **Escalável:** arquitetura preparada para evolução em BI e RAG.
-
-### ❌ Limitações
-- **Escopo maior:** exige mais tempo para integrar componentes.
-- **Risco de implementação:** busca semântica e dashboards podem aumentar complexidade.
-- **Custo mais alto:** inclui OpenSearch/Vector Store e QuickSight.
-- **Dependência de dados:** resultados bons exigem dados consistentes.
-
-### 📊 Complexidade Técnica
-```
-Curva de aprendizado:     █████░░░░░  (50%)
-Configuração AWS:         █████░░░░░  (50%)
-Implementação Python:     █████░░░░░  (50%)
-Debugging:                ██████░░░░  (60%)
-Entregáveis de qualidade: █████░░░░░  (50%)
-```
-
-### 🎯 Arquitetura
-```
-Upload / API → S3 → Lambda → Strands Agent → Textract / Bedrock
-                                         ↓
-                                     DynamoDB
-                                         ↓
-                            OpenSearch / Vector Store
-                                         ↓
-                     API Gateway / Dashboards / Q&A
-```
-
-### ⏱️ Quando usar esta proposta
-- Existe tempo e interesse em impressionar com BI e inteligência.
-- O projeto deve ser apresentado como solução de operação madura.
-- A equipe pode entregar extras como painel e pesquisa.
-- É necessário demonstrar valor além do processamento básico.
-
----
-
-## 📊 Comparação das Propostas para Case C
-
-| Critério | Proposta 1 | Proposta 2 | Proposta 3 |
-|---|---|---|---|
-| **Foco** | MVP operacional | Operação corporativa | Inteligência e Q&A |
-| **Principal valor** | Automação rápida | Governança e auditoria | Decisão e visibilidade |
-| **Complexidade** | Baixa | Média | Média-alta |
-| **Tempo estimado** | 2-4 horas | 6-10 horas | 8-12 horas |
-| **Equipe ideal** | 2-3 pessoas | 3-4 pessoas | 3-4 pessoas |
-| **Serviços AWS** | 5-6 | 7-9 | 8-10 |
-| **Persistência** | Básica | Completa | Completa |
-| **Auditabilidade** | Baixa | Média | Alta |
-| **Dashboard / BI** | Não | Opcional | Sim |
-| **Q&A / Busca** | Não | Opcional | Sim |
-| **Governança operacional** | Baixa | Média | Alta |
-| **Risco de entrega** | Baixo | Médio | Médio |
-| **Impacto em apresentação** | Bom | Forte | Muito forte |
-
----
-
-## 🎓 Matriz de Decisão
-
-### Você deve escolher **Proposta 1** se:
-- A prioridade for validar o fluxo operacional rapidamente.
-- O time quiser entregar o MVP mais simples possível.
-- Não houver tempo para construir controle ou BI.
-
-### Você deve escolher **Proposta 2** se:
-- Precisa demonstrar solução corporativa com histórico e status.
-- Deseja mostrar operação com governança e auditoria.
-- A equipe tem capacidade para integrar serviços adicionais.
-
-### Você deve escolher **Proposta 3** se:
-- Quer impressionar com inteligência e consulta sobre o processo.
-- Deseja apresentar dashboards e resposta a perguntas.
-- Há disponibilidade para entregar um MVP com mais componentes.
-
----
-
-## 🏆 Recomendações Finais
-
-### Por Tipo de Contexto Operacional
-
-#### 🟢 Centro de atendimento ou back office
-→ **Proposta 1**
-- Boa para operacionalizar a rotina inicial de documentos.
-- Ideal quando o objetivo é mostrar processo simples e efetivo.
-
-#### 🟡 Área de controle e conformidade
-→ **Proposta 2**
-- Ideal para operações que exigem histórico e auditoria.
-- Mostra maturidade técnica e foco em processo.
-
-#### 🔴 Área de inteligência e decisão
-→ **Proposta 3**
-- Excelente para demonstrar valor além do processamento.
-- Útil quando o objetivo é transformar dados em insights.
-
----
-
-## 💻 COMPARAÇÃO DE CÓDIGO
-
-### Proposta 1: Strands com fluxo simples
-```python
-from strands import Agent, tool
-from strands.models import BedrockModel
-
-@tool
-def extrair_documento(bucket, key):
-    return textract.detect_document_text(
-        Bucket=bucket, 
-        Document={'S3Object': {'Bucket': bucket, 'Name': key}}
-    )
-
-@tool
-def salvar_json(resultado):
-    return dynamodb.put_item(TableName='Sinistros', Item=resultado)
-
-agent = Agent(
-    model=BedrockModel('amazon-nova-pro'),
-    tools=[extrair_documento, salvar_json],
-    system_prompt='Você é um assistente de análise documental para sinistros.'
-)
-
-response = agent('Classifique o documento e extraia os campos principais.')
-```
-
-### Proposta 2: Strands com persistência e controle
-```python
-from strands import Agent, tool
-from strands.models import BedrockModel
-
-@tool
-def extrair_texto(bucket, key):
-    return textract.detect_document_text(...)
-
-@tool
-def validar_campos(payload):
-    # valida e normaliza datas, valores e tipos
-    return normalize_payload(payload)
-
-@tool
-def registrar_caso(payload):
-    return dynamodb.put_item(TableName='CasosSinistros', Item=payload)
-
-agent = Agent(
-    model=BedrockModel('amazon-nova-pro'),
-    tools=[extrair_texto, validar_campos, registrar_caso],
-    system_prompt='Você é um agente operacional de sinistros que registra o fluxo e valida dados.'
-)
-```
-
-### Proposta 3: Strands com BI e pesquisa inteligente
-```python
-from strands import Agent, tool
-from strands.models import BedrockModel
-
-@tool
-def extrair_e_indexar(bucket, key):
-    extracted = textract.detect_document_text(...)
-    index_to_opensearch(extracted)
-    return extracted
-
-@tool
-def responder_pergunta(query):
-    return bedrock.invoke_model(
-        model_id='amazon-nova-pro',
-        input_text=query
-    )
-
-agent = Agent(
-    model=BedrockModel('amazon-nova-pro'),
-    tools=[extrair_e_indexar, responder_pergunta],
-    system_prompt='Você é um agente de suporte a decisão para sinistros.'
-)
-```
-
----
-
-## 🎯 CASO DE USO REAL: Fluxo de um Sinistro
-
-### Entrada Comum (todas as 3):
-```json
-{
-  "bucket": "sinistros-operacao",
-  "key": "2026/06/15/boletim-ocorrencia-123.pdf"
-}
-```
-
-### Saída Esperada (todas as 3):
 ```json
 {
   "id": "sinistro-123",
-  "tipo_documento": "Boletim de Ocorrência",
-  "status": "Pendente revisão",
+  "tipo_documento": "Boletim de Ocorrencia",
+  "status": "processado",
   "campos_extraidos": {
-    "data_ocorrencia": "2026-06-15",
+    "data": "2026-06-15",
     "local": "Av. Paulista, 1000",
-    "valor_estimado": "R$ 4.500,00",
-    "envolvidos": ["João Silva", "Maria Souza"]
+    "valor_prejuizo": "R$ 4.500,00",
+    "envolvidos": ["Joao Silva", "Maria Souza"]
   },
-  "resumo": "Acidente de trânsito com dois veículos, sem vítimas",
+  "resumo": "Acidente de transito com dois veiculos, sem vitimas fatais.",
   "processado_em": "2026-06-16T10:30:00Z"
 }
 ```
 
-### O que cada proposta adiciona:
-
-#### Proposta 1
-- Retorna JSON estruturado ✓
-- Salva resultado básico em DynamoDB ✓
-- Executa fluxo automático simples ✓
-
-#### Proposta 2
-- Retorna JSON estruturado ✓
-- Salva caso com status e histórico ✓
-- Permite consulta de casos via API ✓
-- Garante retries e tratamento de erros ✓
-
-#### Proposta 3
-- Retorna JSON estruturado ✓
-- Salva caso com histórico ✓
-- Permite pesquisas inteligentes ✓
-- Gera insights e dashboards básicos ✓
+Essa estrutura permite que os dados sejam consultados posteriormente, exportados, exibidos em uma interface ou integrados a sistemas internos de atendimento, regulacao ou auditoria.
 
 ---
 
-## 🚀 PRÓXIMOS PASSOS
+## 4. Escopo Definido
 
-### Se escolheu **Proposta 1**:
-1. Leia a documentação do Amazon Strands Agents SDK
-2. Explore repositórios de samples: `aws-samples/bedrock-samples`
-3. Crie um projeto na console AWS
-4. Teste com os documentos fornecidos
-5. **Mentor:** Escola de Nuvem (EDN)
+### Incluido no MVP
 
-### Se escolheu **Proposta 2** (Full Stack + Workflows):
-1. Aprenda Step Functions (diagrama visual)
-2. Entenda o pipeline: Textract → Bedrock → DynamoDB
-3. Configure API Gateway para consultas
-4. Estude padrões de auditoria e retry
-5. **Mentores:** Samuel Sá, Jusimar Silva, Wilian Uhlmann
+- Recebimento de documentos armazenados no S3.
+- Processamento via Lambda acionada por API Gateway.
+- Extracao de texto com Amazon Textract.
+- Classificacao e estruturacao com Amazon Bedrock.
+- Orquestracao do fluxo com Strands Agents.
+- Persistencia dos resultados em DynamoDB.
+- Retorno padronizado em JSON.
+- Logs de execucao no CloudWatch.
+- Interface demonstrativa para apresentar upload, consulta, filtros e resultados.
+- Apresentacao em PPT finalizada na pasta `Docs_uteis/Apresentacao`.
+- Videos de demonstracao ja realizados.
 
-### Se escolheu **Proposta 3** (Strands + Analytics):
-1. Leia o guia Strands Agents SDK
-2. Instale o Layer do Strands na Lambda
-3. Crie 2-3 ferramentas simples (Textract, DynamoDB)
-4. Configure busca semântica com OpenSearch
-5. **Mentor:** Escola de Nuvem (EDN)
+### Fora do MVP
 
----
+- Autenticacao completa de usuarios.
+- Revisao humana integrada no fluxo.
+- Dashboard analitico em producao.
+- Busca semantica ou RAG sobre historico de sinistros.
+- Esteira CI/CD automatizada.
+- Ambiente multi-conta ou multi-regiao.
 
-## 🎁 Dicas Ouro para Cada Proposta
-
-### Proposta 1
-- ✅ Defina o schema JSON logo no início
-- ✅ Teste com um documento primeiro
-- ✅ Não tente processar tudo de uma vez
-- ⚠️ Monitore timeouts do Lambda
-
-### Proposta 2
-- ✅ Use Step Functions visual designer (não JSON manual)
-- ✅ Comece com Textract, depois complique
-- ✅ Salve TUDO no DynamoDB para auditoria
-- ✅ Teste fluxo com 10 documentos antes de 1000
-- ⚠️ Custos podem ser altos: monitore
-
-### Proposta 3
-- ✅ Teste seu agente localmente (sem Lambda primeiro)
-- ✅ System prompt é CRUCIAL: seja bem específico
-- ✅ Comece com 1 ferramenta, depois 2
-- ✅ Aumente timeout Lambda para 60+ segundos
-- ⚠️ Índices no OpenSearch precisam estar bem configurados
+Esses itens ficam como evolucoes futuras, nao como pendencias da proposta apresentada.
 
 ---
 
-## 📊 Score Card Final
+## 5. Arquitetura Logica
 
-### Proposta 1
-| Item | Score |
-|------|-------|
-| Simplicidade | ⭐⭐⭐⭐⭐ |
-| Velocidade | ⭐⭐⭐ |
-| Curva de aprendizado | ⭐⭐⭐⭐ |
-| Inovação | ⭐⭐ |
-| Escalabilidade | ⭐⭐ |
-| **TOTAL** | **⭐⭐⭐⭐** |
+```mermaid
+flowchart LR
+    A[Usuario / Frontend / Postman] --> B[API Gateway]
+    B --> C[AWS Lambda]
+    C --> D[Amazon S3]
+    C --> E[Amazon Textract]
+    C --> F[Strands Agent]
+    F --> G[Amazon Bedrock / Nova]
+    C --> H[Amazon DynamoDB]
+    C --> I[Amazon CloudWatch]
+```
 
-### Proposta 2
-| Item | Score |
-|------|-------|
-| Simplicidade | ⭐ |
-| Velocidade | ⭐ |
-| Curva de aprendizado | ⭐⭐⭐ |
-| Inovação | ⭐⭐⭐⭐⭐ |
-| Escalabilidade | ⭐⭐⭐⭐⭐ |
-| **TOTAL** | **⭐⭐⭐** |
+### Fluxo resumido
 
-### Proposta 3
-| Item | Score |
-|------|-------|
-| Simplicidade | ⭐⭐⭐⭐ |
-| Velocidade | ⭐⭐⭐⭐⭐ |
-| Curva de aprendizado | ⭐⭐⭐ |
-| Inovação | ⭐⭐⭐⭐ |
-| Escalabilidade | ⭐⭐⭐ |
-| **TOTAL** | **⭐⭐⭐⭐** |
+1. O usuario seleciona ou informa o documento de sinistro.
+2. A API recebe a requisicao e aciona a Lambda.
+3. A Lambda localiza o documento no S3.
+4. O Textract extrai o texto do documento.
+5. O Strands Agent organiza a chamada ao modelo no Bedrock.
+6. O modelo classifica o documento e devolve dados estruturados.
+7. A Lambda salva o resultado no DynamoDB.
+8. O sistema retorna um JSON com o status e os campos extraidos.
 
 ---
 
-## 🎓 Perguntas Finais para sua Decisão
+## 6. Justificativa Tecnica
 
-### 1. Qual é o seu prazo?
-- **< 4h** → Proposta 1
-- **4-8h** → Proposta 3
-- **8h+** → Proposta 2
+### Por que Strands Agents
 
-### 2. Qual é seu nível técnico?
-- **Iniciante** → Proposta 1
-- **Intermediário** → Proposta 3
-- **Avançado** → Proposta 2
+O Strands Agents SDK permite representar o fluxo como um agente operacional, capaz de chamar ferramentas especificas para extrair, classificar, validar e registrar informacoes. Isso conversa diretamente com o Case C, que pede solucoes operacionais com agentes.
 
-### 3. O que você quer apresentar?
-- **"Automação rápida"** → Proposta 1
-- **"Operação robusta"** → Proposta 2
-- **"Inteligência + Operação"** → Proposta 3
+### Por que Amazon Textract
 
----
+Documentos de sinistro normalmente chegam como PDF ou imagem. O Textract resolve a primeira etapa critica: transformar documento visual em texto utilizavel. Sem OCR, o sistema dependeria de arquivos ja convertidos em texto, o que reduziria o valor pratico da solucao.
 
-## 💡 Conclusão
+### Por que Amazon Bedrock / Nova
 
-Para o **Case C**, a melhor estratégia é:
+O Bedrock permite usar modelo generativo gerenciado pela AWS para interpretar o texto extraido, identificar o tipo do documento, resumir a ocorrencia e normalizar campos importantes. Isso atende ao criterio de uso de GenAI AWS e melhora a qualidade da classificacao em comparacao com regras fixas.
 
-1. **Começar por Proposta 1** → MVP funcional em poucas horas
-2. **Evoluir para Proposta 2** → Se houver time e tempo
-3. **Finalizar com Proposta 3** → Se quiser impressionar com BI e Q&A
+### Por que Lambda, S3 e DynamoDB
 
-Isso garante MVP operacional, mantém o escopo alinhado ao contexto corporativo e permite iteração conforme o tempo disponível.
+Esses servicos mantem a arquitetura simples, serverless e escalavel:
+
+- S3 armazena documentos de entrada e historico.
+- Lambda executa o processamento sob demanda.
+- DynamoDB persiste resultados estruturados com baixa latencia.
+- API Gateway expoe o fluxo para testes, frontend ou integracoes.
+- CloudWatch centraliza logs e facilita demonstracao tecnica.
 
 ---
 
-**Elaborado para:** Hack2Hire - Escola de Nuvem (EDN) + AWS  
-**Data:** 16 de junho de 2026  
-**Objetivo:** Propor soluções técnicas viáveis para Case C em ambientes operacionais reais
+## 7. Beneficios Esperados
+
+### Para o negocio
+
+- Reducao do tempo de leitura inicial de documentos.
+- Padronizacao dos dados extraidos.
+- Melhor rastreabilidade dos processos.
+- Apoio a analistas de sinistro em tarefas repetitivas.
+- Base estruturada para futuras consultas e relatorios.
+
+### Para a demonstracao
+
+- Uso claro de servicos AWS gerenciados.
+- Presenca de GenAI AWS no fluxo principal.
+- Arquitetura serverless alinhada ao Well-Architected.
+- Narrativa de negocio objetiva e facil de explicar.
+- Demo visual com frontend, resposta JSON e persistencia em banco.
+
+---
+
+## 8. Alinhamento com os Criterios de Avaliacao
+
+| Criterio | Como a proposta atende |
+|---|---|
+| Cliente e problema bem definidos | Foco em seguradoras e equipes de sinistro que lidam com documentos repetitivos. |
+| Solucao adequada ao problema | Automatiza leitura, classificacao, estruturacao e registro dos documentos. |
+| Uso de GenAI AWS | Utiliza Bedrock / Amazon Nova para normalizacao e interpretacao dos dados. |
+| Uso de agentes | Strands Agents orquestra o fluxo e as ferramentas de processamento. |
+| Servicos gerenciados/serverless | Usa Lambda, S3, DynamoDB, API Gateway, Textract e CloudWatch. |
+| Beneficios comunicaveis | Reducao de retrabalho, ganho de velocidade e maior rastreabilidade. |
+| Demonstracao funcional | Videos ja realizados e apresentacao concluida. |
+| Evolucao futura | Permite adicionar dashboard, revisao humana e busca semantica. |
+
+---
+
+## 9. Limitacoes Conhecidas
+
+Mesmo sendo adequada para o hackathon, a proposta ainda possui limitacoes naturais de MVP:
+
+- O frontend funciona como camada demonstrativa e precisa de ajustes para uso produtivo.
+- Autenticacao, controle de acesso e governanca fina nao fazem parte da entrega inicial.
+- O custo de Textract e Bedrock deve ser controlado em um ambiente real.
+- A qualidade da extracao depende da legibilidade dos documentos.
+- Campos sensiveis exigiriam politicas adicionais de seguranca, mascaramento e retencao.
+
+Essas limitacoes nao invalidam a proposta; elas delimitam o que foi priorizado para a entrega do hackathon.
+
+---
+
+## 10. Evolucoes Futuras
+
+As principais evolucoes recomendadas sao:
+
+- Adicionar fila SQS entre API Gateway e Lambda para processamento assincrono.
+- Criar endpoint de consulta por `id`, `status`, data e tipo de documento.
+- Implementar autenticacao com Cognito ou API Key.
+- Adicionar revisao humana para casos de baixa confianca.
+- Criar dashboard com metricas de volume, tempo medio e taxa de erro.
+- Adicionar busca semantica sobre os documentos processados.
+- Criar esteira de deploy com infraestrutura como codigo.
+
+---
+
+## 11. Conclusao
+
+A proposta definida para o Case C e uma solucao de processamento inteligente de documentos de sinistro usando Strands Agents, Amazon Textract e Amazon Bedrock como nucleo de GenAI. A arquitetura se mantem serverless, escalavel e facil de demonstrar, com persistencia em DynamoDB e exposicao via API Gateway.
+
+O DocuSmart Seguros atende ao problema operacional apresentado, usa servicos AWS relevantes para o criterio de avaliacao e oferece uma narrativa clara para a banca: transformar documentos nao estruturados em dados confiaveis para acelerar a rotina de analise de sinistros.

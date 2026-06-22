@@ -1,61 +1,156 @@
-# Hackaton Escola da nuvem 2026
+# DocuSmart Seguros
 
-## Sobre o Projeto
-A solução resolve um problema real de negócios.
+![DocuSmart Seguros - Frontend](assets/image/front_capa.png)
 
-Com a nossa solução, documentos são recebidos em lote, classificados automaticamente, extraídos e transformados em um JSON padronizado. Isso reduz o retrabalho, melhora a velocidade de atendimento e permite que equipes de crédito e sinistros tomem decisões mais rápidas com dados confiáveis.
+## Analise inteligente de documentos de sinistro com AWS e IA
 
-## Contexto do Hack2Hire
-O Hack2Hire é um evento de inovação focado em mostrar como equipes podem resolver desafios reais em tempo acelerado.
+O **DocuSmart Seguros** e uma solucao desenvolvida para o Hack2Hire - Escola da Nuvem + AWS. O projeto automatiza a analise inicial de documentos de sinistro, transformando arquivos nao estruturados em dados organizados, consultaveis e prontos para apoiar equipes de atendimento, sinistros e back office.
 
-Esse hackathon destaca a capacidade de entrega em equipe, o uso de tecnologias AWS de ponta e a mentalidade de produção rápida. O projeto foi desenvolvido com foco em resultados reais, usabilidade e sustentabilidade técnica.
-
-## Sobre a Escola da Nuvem
-A Escola da Nuvem forma profissionais para o mercado de nuvem com práticas hands-on, orientação de mentores e foco em transformação social. O programa conecta participantes com o universo AWS, prepara para hackathons e promove aprendizado prático em arquitetura serverless, IA generativa e automação.
-
-## Nossa Solução
-
-### Funcionalidades principais
-
-## Diferenciais
-
-## Tecnologias Utilizadas
-- AWS Lambda
-- Amazon S3
-- Amazon Bedrock Data Automation (BDA)
-- Amazon Nova (Bedrock)
-- AWS Step Functions
-- Amazon DynamoDB
-- AWS IAM
-- Python com boto3
-- (Opcional) Amazon Textract e Amazon Comprehend, conforme evolução do produto
-
-## Arquitetura da Solução
-
-## Demonstração
-
-## Como Executar o Projeto
-
-## Integrantes da Equipe
-Grupo 10
-- [Nome do Integrante 1](link para perfil) - Função e contribuição
-- Jarbas Beserra Gomes Filho
-- Jezebel de Oliveira Guedes
-- JOSE ANTONIO FARIAS SANTOS
-- Krisley Ferreira de Almeida
-- ELIZEU THENORIO RODRIGUES DE LIMA
-- Felipe Jediel De Souza Oliveira
-- Jose Matheus Dos Santos Neto
-- Laísa Ferreira da Silva
-- Leandro Vieira Goulart
-
-## Aprendizados e Desafios
-
-## Próximos Passos
-
-## Agradecimentos
-Agradecemos ao Hack2Hire, à Escola da Nuvem, aos mentores e à organização pelo espaço de aprendizado e colaboração. Este projeto reflete a dedicação do time em construir uma solução prática, alinhada às melhores práticas AWS e à realidade de mercado.
+A proposta usa uma arquitetura serverless com servicos AWS gerenciados e inteligencia artificial generativa: o documento e recebido pelo frontend ou API, processado por uma Lambda orquestradora, lido com Amazon Textract, analisado com Amazon Bedrock / Nova e persistido no DynamoDB.
 
 ---
 
-### Observações pendentes
+## Objetivo
+
+Reduzir o trabalho manual na triagem de documentos de sinistro, acelerar o tempo de resposta e padronizar informacoes importantes como tipo de documento, data, local, valor estimado, envolvidos e resumo da ocorrencia.
+
+---
+
+## Funcionalidades
+
+- Upload ou referencia de documentos de sinistro.
+- Processamento via API Gateway e AWS Lambda.
+- Extracao de texto com Amazon Textract.
+- Analise inteligente com Amazon Bedrock / Nova.
+- Orquestracao do fluxo com Strands Agents.
+- Retorno em JSON estruturado.
+- Persistencia dos resultados no Amazon DynamoDB.
+- Logs e rastreabilidade com Amazon CloudWatch.
+- Frontend demonstrativo para consulta, filtros, resultados e exportacao.
+
+---
+
+## Tecnologias
+
+| Camada | Tecnologias |
+|---|---|
+| Frontend | HTML, CSS, JavaScript |
+| Backend | Python, boto3, AWS Lambda |
+| API | Amazon API Gateway |
+| IA / OCR | Strands Agents, Amazon Textract, Amazon Bedrock / Nova |
+| Armazenamento | Amazon S3 |
+| Banco de dados | Amazon DynamoDB |
+| Seguranca | AWS IAM |
+| Observabilidade | Amazon CloudWatch |
+
+---
+
+## Arquitetura
+
+A arquitetura final esta documentada com base no diagrama usado na apresentacao.
+
+Resumo do fluxo:
+
+1. Usuario envia ou referencia um documento no frontend.
+2. API Gateway recebe a requisicao.
+3. AWS Lambda orquestra o processamento.
+4. Amazon S3 armazena o documento.
+5. Amazon Textract extrai o texto.
+6. Amazon Bedrock / Nova analisa e estrutura os dados.
+7. Amazon DynamoDB salva o resultado.
+8. Frontend exibe a resposta ao usuario.
+
+Documento detalhado: [Arquitetura AWS - DocuSmart Seguros](Docs_uteis/Arquitetura.md)
+
+---
+
+## Estrutura do Repositorio
+
+```text
+Hack2Hire/
+|-- Backend/
+|   |-- lambda.py
+|   `-- lambda_function_corrigida.py
+|-- Frontend/
+|   |-- index.html
+|   |-- styles.css
+|   |-- script.js
+|   `-- assets/
+|-- Docs_uteis/
+|   |-- Apresentacao/
+|   |-- Arquivos_teste/
+|   |-- Cases/
+|   |-- analise_proposta_case_c.md
+|   |-- Arquitetura.md
+|   |-- Requisitos_gerais.md
+|   |-- Regras_de_avaliacao.md
+|   `-- Diagrama_escopo_do_projeto.md
+|-- assets/
+|   `-- image/
+`-- README.md
+```
+
+---
+
+## Como Visualizar o Frontend
+
+O frontend e estatico. Abra o arquivo abaixo no navegador:
+
+```text
+Frontend/index.html
+```
+
+Tambem e possivel servir a pasta `Frontend` com qualquer servidor local simples.
+
+Observacao: o frontend funciona como camada demonstrativa do produto e da experiencia de uso. A integracao produtiva depende da URL do API Gateway configurada no ambiente AWS.
+
+---
+
+## Documentacao Detalhada
+
+- [Analise da Proposta - Case C](Docs_uteis/analise_proposta_case_c.md)
+- [Arquitetura AWS - DocuSmart Seguros](Docs_uteis/Arquitetura.md)
+- [Requisitos Gerais](Docs_uteis/Requisitos_gerais.md)
+- [Diagrama, Escopo e Arquitetura](Docs_uteis/Diagrama_escopo_do_projeto.md)
+- [Regras de Avaliacao](Docs_uteis/Regras_de_avaliacao.md)
+- [Conformidade da Lambda com a Arquitetura](Docs_uteis/Lambda_Conformidade_Arquitetura.md)
+- [Verificacao da Lambda Corrigida](Docs_uteis/Verificacao_Lambda_Corrigida.md)
+
+Materiais finais:
+
+- [Apresentacao final](Docs_uteis/Apresentacao/)
+- [Arquivos de teste](Docs_uteis/Arquivos_teste/)
+- [Cases do desafio](Docs_uteis/Cases/)
+
+---
+
+## Status da Entrega
+
+- Proposta definida com foco em Strands Agents, Textract e Bedrock.
+- Arquitetura final documentada.
+- Requisitos gerais atualizados.
+- Frontend demonstrativo construido.
+- Apresentacao final concluida na pasta `Docs_uteis/Apresentacao`.
+- Videos de demonstracao realizados.
+
+---
+
+## Equipe
+
+Grupo 10
+
+- Jarbas Beserra Gomes Filho
+- Jezebel de Oliveira Guedes
+- Jose Antonio Farias Santos
+- Krisley Ferreira de Almeida
+- Elizeu Thenorio Rodrigues de Lima
+- Felipe Jediel De Souza Oliveira
+- Jose Matheus Dos Santos Neto
+- Laisa Ferreira da Silva
+- Leandro Vieira Goulart
+
+---
+
+## Agradecimentos
+
+Agradecemos ao Hack2Hire, a Escola da Nuvem, aos mentores e a AWS pela oportunidade de desenvolver uma solucao pratica, alinhada a um problema real de negocio e aos principais conceitos de arquitetura serverless e inteligencia artificial generativa na nuvem.

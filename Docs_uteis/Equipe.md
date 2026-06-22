@@ -17,9 +17,9 @@ O grupo trabalhou na concepcao, estruturacao, desenvolvimento e apresentacao de 
 | Laisa Ferreira da Silva | - | [LinkedIn](https://www.linkedin.com/in/laisa-ferreira-da-silva/) | [GitHub](https://github.com/LA1SA0) |
 | Krisley Ferreira de Almeida | - | [LinkedIn](https://www.linkedin.com/in/krisley-almeida/) | [GitHub](https://github.com/El-kris16) |
 | Felipe Jediel de Souza Oliveira | - | [LinkedIn](https://www.linkedin.com/in/felipe-jediel/) | - |
-| Jezebel de Oliveira Guedes | - | - | - |
-| Elizeu Thenorio Rodrigues de Lima | - | - | - |
-| Jose Matheus Dos Santos Neto | - | - | - |
+| Jezebel de Oliveira Guedes | Bel | [LinkedIn](https://www.linkedin.com/in/jezebel-guedes/) | [GitHub](https://github.com/Jezebel1990) |
+| Elizeu Thenorio Rodrigues de Lima | - | [LinkedIn](https://www.linkedin.com/in/elizeu-programador-fullstack/) | [GitHub](https://github.com/elizeu-lima) |
+| Jose Matheus Dos Santos Neto | Teteu | [LinkedIn](https://www.linkedin.com/in/jose-matheus-dos-santos-neto-a37974384) | - |
 
 ---
 
@@ -133,4 +133,4 @@ Principais entregas associadas ao trabalho da equipe:
 
 ## Observacao
 
-As responsabilidades individuais podem ser complementadas conforme a divisao final registrada pela equipe. A versao atual preserva uma descricao segura e coletiva, evitando atribuir atividades especificas sem confirmacao.
+As responsabilidades individuais podem ser complementadas conforme a divisao final registrada pela equipe. A versao atual preserva uma descricao segura e coletiva, evitando atribuir a

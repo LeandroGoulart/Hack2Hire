@@ -2,6 +2,8 @@
 
 ## Visão Geral
 
+![Arquitetura](../Frontend/assets/image/docsmartSeguros_arquitetura.png)
+
 Sistema serverless para automatizar o processamento de PDFs de sinistro, transformando documentos não-estruturados em dados estruturados através de uma pipeline AWS.
 
 ```

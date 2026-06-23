@@ -139,7 +139,6 @@ Materiais finais:
 
 Grupo 10
 
-- Jarbas Beserra Gomes Filho
 - Jezebel de Oliveira Guedes
 - Jose Antonio Farias Santos
 - Krisley Ferreira de Almeida

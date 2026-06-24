@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuSmart Seguros - Arquitetura em Desenvolvimento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="analyst.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="side-nav">
+            <a class="brand" href="analyst.html">
+                <img src="../assets/image/Identidade_ficticia/logo.png" alt="DocuSmart">
+                <span><strong>Docu<span>Smart</span></strong><small>SEGUROS</small></span>
+            </a>
+
+            <nav>
+                <a class="nav-item" href="analyst.html"><i class="fas fa-gauge-high"></i> Dashboard</a>
+                <div class="nav-label">Analise</div>
+                <a class="nav-item" href="docUpload.html"><i class="fas fa-file-arrow-up"></i> Enviar documento</a>
+                <a class="nav-item" href="docUpload.html#searchResults"><i class="fas fa-database"></i> Consulta e resultados</a>
+                <a class="nav-item" href="#"><i class="fas fa-list-check"></i> Fila de processamento</a>
+                <a class="nav-item" href="#"><i class="fas fa-user-check"></i> Revisao humana</a>
+                <a class="nav-item" href="#"><i class="fas fa-triangle-exclamation"></i> Possiveis fraudes</a>
+
+                <div class="nav-label">Observabilidade</div>
+                <a class="nav-item" href="analyst.html"><i class="fas fa-chart-line"></i> Metricas</a>
+                <a class="nav-item" href="#"><i class="fas fa-rectangle-list"></i> Logs e eventos</a>
+                <a class="nav-item" href="#"><i class="fas fa-wallet"></i> Custos AWS</a>
+
+                <div class="nav-label">Configuracoes</div>
+                <a class="nav-item active" href="architecture.html"><i class="fas fa-diagram-project"></i> Arquitetura</a>
+                <a class="nav-item" href="#"><i class="fas fa-brain"></i> Modelos de IA</a>
+                <a class="nav-item" href="#"><i class="fas fa-users-gear"></i> Perfis e permissoes</a>
+            </nav>
+
+            <div class="nav-footer">
+                <div class="env-card">
+                    <div class="env-row"><span>Ambiente</span><strong>Desenvolvimento</strong></div>
+                    <div class="env-row"><span>Regiao AWS</span><strong>us-east-1</strong></div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="app-main">
+            <header class="topbar">
+                <button class="mobile-menu" data-menu aria-label="Abrir menu"><i class="fas fa-bars"></i></button>
+                <div class="top-status">
+                    <span class="status-pill"><span class="dot"></span>Arquitetura proposta</span>
+                    <span class="status-pill"><i class="fas fa-shield-halved"></i> Boas praticas AWS</span>
+                    <span class="status-pill"><i class="fas fa-cloud"></i> AWS Serverless</span>
+                </div>
+                <div class="top-user">
+                    <i class="far fa-bell"></i>
+                    <div class="avatar">DS</div>
+                    <span><strong>DocuSmart</strong><br>Arquiteto</span>
+                </div>
+            </header>
+
+            <div class="page">
+                <section class="page-head">
+                    <div>
+                        <h1>Arquitetura em Desenvolvimento</h1>
+                        <p>Visao proposta para evolucao da plataforma de automacao inteligente de documentos de sinistro.</p>
+                    </div>
+                    <div class="toolbar">
+                        <select class="control" aria-label="Ambiente">
+                            <option>Desenvolvimento</option>
+                            <option>Homologacao</option>
+                            <option>Producao futura</option>
+                        </select>
+                        <button class="button" data-refresh><i class="fas fa-arrows-rotate"></i> Validar arquitetura</button>
+                        <button class="button"><i class="fas fa-file-export"></i> Exportar</button>
+                    </div>
+                </section>
+
+                <section class="grid arch-flow">
+                    <article class="arch-stage" data-stage>
+                        <div class="stage-head" style="color:#1677ff;background:#eef5ff">1. Acesso e Seguranca</div>
+                        <div class="stage-body">
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#1677ff"><i class="fas fa-users"></i></div>
+                                <h3>Usuarios</h3>
+                                <p>Analistas, corretores, prestadores e gestores.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#7547d8"><i class="fas fa-user-shield"></i></div>
+                                <h3>Amazon Cognito + MFA</h3>
+                                <p>Autenticacao e controle de identidade corporativa.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#df3f52"><i class="fas fa-shield-halved"></i></div>
+                                <h3>CloudFront + WAF</h3>
+                                <p>Distribuicao segura, protecao contra ataques e rate limiting.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#7547d8"><i class="fas fa-code"></i></div>
+                                <h3>API Gateway</h3>
+                                <p>APIs seguras para entrada e consulta dos processos.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="arch-stage" data-stage>
+                        <div class="stage-head" style="color:#159da5;background:#eaf8f7">2. Armazenamento</div>
+                        <div class="stage-body">
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#4b8e31"><i class="fas fa-bucket"></i></div>
+                                <h3>Amazon S3</h3>
+                                <p>Armazenamento seguro, escalavel e versionado.</p>
+                            </div>
+                            <div class="arch-node"><h3>Documentos brutos</h3><p>Recebe os arquivos originais em PDF, JPG e PNG.</p></div>
+                            <div class="arch-node"><h3>Documentos processados</h3><p>Arquivos analisados e dados estruturados.</p></div>
+                            <div class="arch-node"><h3>Documentos rejeitados</h3><p>Arquivos com erro, formato invalido ou baixa confianca.</p></div>
+                            <div class="arch-node">
+                                <h3>Protecao</h3>
+                                <ul><li>AWS KMS</li><li>Lifecycle policy</li><li>Object Lock</li><li>IAM com menor privilegio</li></ul>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="arch-stage" data-stage>
+                        <div class="stage-head" style="color:#7547d8;background:#f4efff">3. Processamento Assincrono</div>
+                        <div class="stage-body">
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#df2671"><i class="fas fa-list"></i></div>
+                                <h3>Amazon SQS</h3>
+                                <p>Fila desacoplada para absorver picos de processamento.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#df2671"><i class="fas fa-diagram-project"></i></div>
+                                <h3>AWS Step Functions</h3>
+                                <p>Orquestracao, retries, controle de estado e tratamento de falhas.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#ef8b22"><i class="fas fa-bolt"></i></div>
+                                <h3>AWS Lambda</h3>
+                                <p>Validacao, pre-processamento, regras de negocio e deteccao de fraude.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#159da5"><i class="fas fa-file-waveform"></i></div>
+                                <h3>Textract + Bedrock</h3>
+                                <p>OCR, classificacao, resumo e extracao inteligente.</p>
+                            </div>
+                            <div class="arch-node" style="border-color:#e5aac3">
+                                <h3>DLQ e reprocessamento</h3>
+                                <p>Falhas seguem para fila dedicada e podem retornar ao fluxo.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="arch-stage" data-stage>
+                        <div class="stage-head" style="color:#c27612;background:#fff7e9">4. Dados e Consultas</div>
+                        <div class="stage-body">
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#7547d8"><i class="fas fa-database"></i></div>
+                                <h3>Amazon DynamoDB</h3>
+                                <p>Status, metadados, confianca e controle do processo.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#7547d8"><i class="fas fa-magnifying-glass-chart"></i></div>
+                                <h3>Amazon OpenSearch</h3>
+                                <p>Busca textual, filtros e analises operacionais avancadas.</p>
+                            </div>
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#1677ff"><i class="fas fa-server"></i></div>
+                                <h3>Amazon Aurora / RDS</h3>
+                                <p>Dados relacionais e integracoes transacionais.</p>
+                            </div>
+                            <div class="arch-node">
+                                <h3>Dados armazenados</h3>
+                                <ul><li>Numero do sinistro</li><li>CPF/CNPJ</li><li>Apolice</li><li>Status e score</li><li>Possivel fraude</li></ul>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="arch-stage" data-stage>
+                        <div class="stage-head" style="color:#1677ff;background:#eef5ff">5. Integracoes Corporativas</div>
+                        <div class="stage-body">
+                            <div class="arch-node">
+                                <div class="node-icon" style="background:#df2671"><i class="fas fa-arrows-turn-to-dots"></i></div>
+                                <h3>Amazon EventBridge</h3>
+                                <p>Eventos e integracoes entre sistemas corporativos.</p>
+                            </div>
+                            <div class="arch-node"><h3>Sistema Core de Sinistros</h3><p>Atualizacao de ocorrencias, coberturas e pareceres.</p></div>
+                            <div class="arch-node"><h3>CRM e ERP</h3><p>Relacionamento, atendimento e processos financeiros.</p></div>
+                            <div class="arch-node"><h3>Data Lake e BI</h3><p>Dados corporativos, QuickSight e dashboards executivos.</p></div>
+                            <div class="arch-node"><h3>Notificacoes</h3><p>Comunicacao por e-mail, SMS e canais internos.</p></div>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="pipeline">
+                    <h2>Etapas do Processamento</h2>
+                    <div class="pipeline-steps">
+                        <div class="pipeline-step"><i class="fas fa-file-circle-check"></i>Validacao do arquivo</div>
+                        <div class="pipeline-step"><i class="fas fa-gears"></i>Pre-processamento</div>
+                        <div class="pipeline-step"><i class="fas fa-file-waveform"></i>OCR com Textract</div>
+                        <div class="pipeline-step"><i class="fas fa-brain"></i>Analise com Bedrock</div>
+                        <div class="pipeline-step"><i class="fas fa-code"></i>Validacao do JSON</div>
+                        <div class="pipeline-step"><i class="fas fa-shield"></i>Regras e fraude</div>
+                    </div>
+                </section>
+
+                <section class="grid governance-grid">
+                    <article class="governance-card">
+                        <div class="service-title"><i style="background:#df3f52" class="fas fa-shield-halved"></i>Seguranca e Compliance</div>
+                        <h3>Protecao ponta a ponta</h3>
+                        <p>IAM, KMS, Secrets Manager, CloudTrail, AWS Config, Security Hub, GuardDuty e Macie.</p>
+                    </article>
+                    <article class="governance-card">
+                        <div class="service-title"><i style="background:#df2671" class="fas fa-chart-line"></i>Observabilidade</div>
+                        <h3>Rastreabilidade completa</h3>
+                        <p>CloudWatch, X-Ray, logs, alarmes, dashboards executivos e metricas de negocio.</p>
+                    </article>
+                    <article class="governance-card">
+                        <div class="service-title"><i style="background:#159f70" class="fas fa-arrows-rotate"></i>Resiliencia</div>
+                        <h3>Operacao confiavel</h3>
+                        <p>Multi-AZ, retry automatico, DLQ, backups, disaster recovery e ambientes segregados.</p>
+                    </article>
+                    <article class="governance-card">
+                        <div class="service-title"><i style="background:#1677ff" class="fas fa-code-branch"></i>Entrega Continua</div>
+                        <h3>Infraestrutura reproduzivel</h3>
+                        <p>CI/CD, infraestrutura como codigo, monitoramento de custos e praticas FinOps.</p>
+                    </article>
+                </section>
+
+                <div class="notice">
+                    <span><i class="fas fa-circle-info"></i> Clique em uma etapa da arquitetura para destaca-la.</span>
+                    <strong><i class="fas fa-shield-halved" style="color:#159f70"></i> Analise rapida, segura e inteligente</strong>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="analyst.js"></script>
+</body>
+</html>

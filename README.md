@@ -136,6 +136,7 @@ Observacao: o frontend funciona como camada demonstrativa do produto e da experi
 
 ## Documentacao Detalhada
 
+- [Padrao de contribuicao e commits](CONTRIBUTING.md)
 - [Analise da Proposta - Case C](Docs_uteis/analise_proposta_case_c.md)
 - [Arquitetura AWS - DocuSmart Seguros](Docs_uteis/Arquitetura.md)
 - [Requisitos Gerais](Docs_uteis/Requisitos_gerais.md)

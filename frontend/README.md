@@ -49,14 +49,18 @@ cd frontend
 
 2. **Execute localmente**
  - **Opção 1:** Abrir diretamente
- Abra o arquivo `index.html` no navegador
+ Abra o arquivo `client/client.html` para o ambiente do cliente ou `analyst/docUpload.html` para o ambiente do analista.
 
 - **Opção 2:** Servidor local
 python -m http.server 8000
 
 ```bash
 python -m http.server 8000
-# Acesse: http://localhost:8000
+# Entrada futura: http://localhost:8000/
+# Cliente: http://localhost:8000/client/client.html
+# Painel do analista: http://localhost:8000/analyst/analyst.html
+# Upload documental: http://localhost:8000/analyst/docUpload.html
+# Arquitetura: http://localhost:8000/analyst/architecture.html
 ```
 
 3. **Configure o endpoint**

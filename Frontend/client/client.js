@@ -14,6 +14,8 @@
     const missingDocuments = document.getElementById('missingDocuments');
     const missingDocumentsText = document.getElementById('missingDocumentsText');
     const serviceReady = document.getElementById('serviceReady');
+    const serviceReadyTitle = document.getElementById('serviceReadyTitle');
+    const serviceReadyText = document.getElementById('serviceReadyText');
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
     const progressPercentage = document.getElementById('progressPercentage');
@@ -23,6 +25,7 @@
     const sentCount = document.getElementById('sentCount');
     const pendingCount = document.getElementById('pendingCount');
     const addedCount = document.getElementById('addedCount');
+    const chatbotSection = document.getElementById('chatbot-section');
 
     const requiredTypes = ['boletim', 'laudo', 'fiscal', 'outro'];
     const documentTypes = {
@@ -290,7 +293,14 @@
 
         missingDocuments.hidden = allComplete;
         serviceReady.hidden = !allComplete;
+        chatbotSection.hidden = !allComplete;
         missingDocumentsText.textContent = missing.map(type => documentTypes[type].label).join(', ') + '.';
+        serviceReadyTitle.textContent = submissionConfirmed
+            ? 'Protocolo SIN-2026-000145 criado com sucesso.'
+            : 'Todos os documentos necessários foram adicionados.';
+        serviceReadyText.textContent = submissionConfirmed
+            ? 'Documentação recebida e aguardando análise automática.'
+            : 'Clique em Enviar documentos para concluir a solicitação.';
 
         sendDocumentsBtn.disabled = !hasValidDocuments || submissionConfirmed || hasAnalyzing;
         sendDocumentsText.innerHTML = submissionConfirmed

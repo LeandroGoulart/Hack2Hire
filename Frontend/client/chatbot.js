@@ -4,15 +4,20 @@
     let protocolContext = null;
 
     const quickActions = [
-        { label: 'Status do protocolo', message: 'Como está meu protocolo?' },
-        { label: 'Documentos enviados', message: 'Quais documentos enviei?' },
+        { label: 'Resumo do protocolo', message: 'Me dê um resumo.' },
+        { label: 'Meus documentos', message: 'Quais documentos enviei?' },
+        { label: 'Status da análise', message: 'Como está meu protocolo?' },
         { label: 'Pendências', message: 'Está faltando alguma coisa?' },
-        { label: 'Resumo', message: 'Me dê um resumo.' }
+        { label: 'Prazo de atendimento', message: 'Qual é o prazo da análise?' },
+        { label: 'Falar com atendente', message: 'Quero falar com um atendente.' }
     ];
 
     function createChatPanel() {
+        const host = document.getElementById('chatbotSectionHost');
+        if (!host) return null;
+
         const panel = document.createElement('section');
-        panel.className = 'client-chat';
+        panel.className = 'client-chat expanded';
         panel.id = 'clientChat';
         panel.setAttribute('aria-label', 'Atendimento DocuSmart');
         panel.innerHTML = `
@@ -21,8 +26,8 @@
                     <strong><i class="fas fa-comments"></i> Assistente do protocolo</strong>
                     <small><span></span> Contexto atualizado pela Lambda</small>
                 </div>
-                <button type="button" data-close-chat aria-label="Fechar atendimento">
-                    <i class="fas fa-times"></i>
+                <button type="button" data-back-documents aria-label="Voltar aos documentos">
+                    <i class="fas fa-arrow-up"></i>
                 </button>
             </header>
             <div class="client-chat-context" data-chat-context></div>
@@ -33,11 +38,10 @@
                 <button type="submit" aria-label="Enviar mensagem"><i class="fas fa-paper-plane"></i></button>
             </form>
         `;
-        document.body.appendChild(panel);
+        host.innerHTML = '';
+        host.appendChild(panel);
 
-        panel.querySelector('[data-close-chat]').addEventListener('click', () => {
-            panel.classList.remove('open');
-        });
+        panel.querySelector('[data-back-documents]').addEventListener('click', scrollToDocuments);
         panel.querySelector('[data-chat-form]').addEventListener('submit', event => {
             event.preventDefault();
             const input = panel.querySelector('[data-chat-input]');
@@ -50,6 +54,22 @@
         renderQuickActions(panel);
         return panel;
     }
+
+    function scrollToDocuments() {
+        document.getElementById('document-screen')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+
+    function openChatbotSection() {
+        document.getElementById('chatbot-section')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+
+    window.openChatbotSection = openChatbotSection;
 
     function renderQuickActions(panel) {
         const container = panel.querySelector('[data-chat-actions]');
@@ -219,6 +239,13 @@
             `;
         }
 
+        if (/(atendente|atendimento humano|pessoa real|falar com alguem)/.test(text)) {
+            return `
+                <p>Solicitação de atendimento humano registrada para o protocolo <strong>${escapeHtml(context.protocol.id)}</strong>.</p>
+                <p>Um atendente poderá continuar a conversa usando o mesmo histórico e os documentos já associados ao protocolo.</p>
+            `;
+        }
+
         return `
             <p>Posso ajudar com informações registradas no protocolo <strong>${escapeHtml(context.protocol.id)}</strong>.</p>
             <p>Você pode perguntar sobre status, documentos enviados, pendências, análise, valores, envolvidos, prazo ou pedir um resumo.</p>
@@ -254,11 +281,15 @@
 
         protocolContext = context;
         const panel = document.getElementById('clientChat') || createChatPanel();
+        if (!panel) return;
         const messages = panel.querySelector('[data-chat-messages]');
         messages.innerHTML = '';
         updateContextBadge(panel, context);
         appendMessage(panel, getInitialMessage(context), 'assistant', true);
         panel.classList.add('open');
+        openChatbotSection();
         panel.querySelector('[data-chat-input]').focus();
     });
+
+    document.getElementById('backToDocumentsBtn')?.addEventListener('click', scrollToDocuments);
 }());

@@ -8,9 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="client.css?v=5">
+    <link rel="stylesheet" href="client.css?v=9">
 </head>
 <body>
+    <div class="document-screen" id="document-screen">
     <!-- ===== HEADER ===== -->
     <header class="header">
         <div class="header-content">
@@ -95,7 +96,7 @@
                     </div>
 
                     <button class="btn btn-start-service btn-block" id="startServiceBtn" disabled>
-                        <i class="fas fa-comments"></i> Iniciar atendimento
+                        <i class="fas fa-comments"></i> Conversar com Assistente
                     </button>
                 </div>
             </div>
@@ -200,8 +201,8 @@
                         <div class="service-ready" id="serviceReady" hidden>
                             <i class="fas fa-circle-check"></i>
                             <div>
-                                <strong>Todos os documentos necessários foram enviados com sucesso.</strong>
-                                <p>Sua solicitação agora está pronta para análise.</p>
+                                <strong id="serviceReadyTitle">Todos os documentos necessários foram enviados com sucesso.</strong>
+                                <p id="serviceReadyText">Envie os documentos para criar o protocolo.</p>
                             </div>
                         </div>
                     </section>
@@ -228,6 +229,30 @@
             </div>
         </div>
     </footer>
+    </div>
+
+    <section class="chatbot-section" id="chatbot-section" aria-labelledby="chatbotSectionTitle" hidden>
+        <div class="chatbot-section-inner">
+            <header class="chatbot-section-heading">
+                <div>
+                    <span class="chatbot-eyebrow"><i class="fas fa-headset"></i> Atendimento inteligente</span>
+                    <h2 id="chatbotSectionTitle">Assistente do Protocolo</h2>
+                    <p>Consulte documentos, pendências, status da análise, valores e próximos passos.</p>
+                </div>
+                <button class="btn btn-outline chatbot-back-button" type="button" id="backToDocumentsBtn">
+                    <i class="fas fa-arrow-up"></i> Voltar aos documentos
+                </button>
+            </header>
+
+            <div class="chatbot-section-host" id="chatbotSectionHost">
+                <div class="chatbot-section-placeholder">
+                    <i class="fas fa-comments"></i>
+                    <strong>O assistente será contextualizado após o envio dos documentos.</strong>
+                    <span>Conclua o processo documental para consultar seu protocolo.</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ===== TOAST CONTAINER ===== -->
     <div class="toast-container" id="toastContainer"></div>
@@ -249,7 +274,7 @@
     </div>
 
     <!-- ===== JAVASCRIPT ===== -->
-    <script src="client.js?v=5"></script>
-    <script src="chatbot.js?v=2"></script>
+    <script src="client.js?v=8"></script>
+    <script src="chatbot.js?v=4"></script>
 </body>
 </html>

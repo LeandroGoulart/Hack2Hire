@@ -3,53 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuSmart Seguros · Análise Inteligente de Sinistros</title>
+    <title>DocuSmart Seguros - Upload de Documentos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="analyst.css">
     <link rel="stylesheet" href="docUpload.css">
 </head>
-<body>
-    <!-- ===== HEADER ===== -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <img src="../assets/image/Identidade_ficticia/logo.png" alt="Logo" class="logo-img">
-                </div>
-                <div class="logo-text">
-                    <h1>Docu<span>Smart</span></h1>
-                    <span class="subtitle">SEGUROS</span>
-                </div>
-            </div>
-            <div class="header-actions">
-                <div class="header-badge" id="statusBadge">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span id="statusText">Sistema Online</span>
-                </div>
-                <div class="header-badge">
-                    <i class="fas fa-robot"></i>
-                    <span>Strands Agent v1.0</span>
-                </div>
-                <div class="header-badge">
-                    <i class="fas fa-code-branch"></i>
-                    <span>API Gateway · Serverless</span>
-                </div>
-                <a class="header-badge" href="analyst.html" title="Abrir painel do analista">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Painel do analista</span>
-                </a>
-                <a class="header-badge" href="architecture.html" title="Abrir arquitetura">
-                    <i class="fas fa-diagram-project"></i>
-                    <span>Arquitetura</span>
-                </a>
-            </div>
-        </div>
-    </header>
+<body data-active="doc-upload">
+    <div class="app-shell">
+        <aside class="side-nav" data-analyst-sidebar></aside>
 
-    <!-- ===== MAIN ===== -->
-    <main class="main">
+        <div class="app-main">
+            <header class="topbar">
+                <button class="mobile-menu" data-menu aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-status">
+                    <span class="status-pill" id="statusBadge">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">Pronto</span>
+                    </span>
+                    <span class="status-pill"><i class="fas fa-robot"></i> Strands Agent v1.0</span>
+                    <span class="status-pill"><i class="fas fa-code-branch"></i> API Gateway - Serverless</span>
+                </div>
+                <div class="top-user">
+                    <i class="far fa-bell"></i>
+                    <div class="avatar">DS</div>
+                    <span><strong>DocuSmart</strong><br>Analista</span>
+                </div>
+            </header>
+
+            <!-- ===== MAIN ===== -->
+            <main class="main">
         <div class="page-title">
             <h2 class="analysis-icon"><img src="../assets/image/Identidade_ficticia/doc.png" alt="Análise" class="analysis-img">Análise de Documentos</h2>
             <p>Faça upload do documento de sinistro ou consulte registros existentes</p>
@@ -335,26 +322,28 @@
                 </div>
             </div>
         </div>
-    </main>
+            </main>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <div class="footer-content">
-            <span>© 2026 DocuSmart Seguros · Todos os direitos reservados</span>
-            <div class="links">
-                <a href="#"><i class="fas fa-shield"></i> Privacidade</a>
-                <a href="#"><i class="fas fa-file-contract"></i> Termos</a>
-                <a href="#"><i class="fas fa-question-circle"></i> Suporte</a>
-            </div>
-            <div class="tech">
-                <span class="badge-tech"><i class="fas fa-aws"></i> AWS</span>
-                <span class="badge-tech"><i class="fas fa-robot"></i> Strands</span>
-                <span class="badge-tech"><i class="fas fa-database"></i> DynamoDB</span>
-                <span class="badge-tech"><i class="fas fa-brain"></i> Bedrock</span>
-                <span class="badge-tech"><i class="fas fa-bolt"></i> API Gateway</span>
-            </div>
+            <!-- ===== FOOTER ===== -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <span>© 2026 DocuSmart Seguros - Ambiente do Analista</span>
+                    <div class="links">
+                        <a href="#"><i class="fas fa-shield"></i> Privacidade</a>
+                        <a href="#"><i class="fas fa-file-contract"></i> Termos</a>
+                        <a href="#"><i class="fas fa-question-circle"></i> Suporte</a>
+                    </div>
+                    <div class="tech">
+                        <span class="badge-tech"><i class="fas fa-cloud"></i> AWS</span>
+                        <span class="badge-tech"><i class="fas fa-robot"></i> Strands</span>
+                        <span class="badge-tech"><i class="fas fa-database"></i> DynamoDB</span>
+                        <span class="badge-tech"><i class="fas fa-brain"></i> Bedrock</span>
+                        <span class="badge-tech"><i class="fas fa-bolt"></i> API Gateway</span>
+                    </div>
+                </div>
+            </footer>
         </div>
-    </footer>
+    </div>
 
     <!-- ===== TOAST CONTAINER ===== -->
     <div class="toast-container" id="toastContainer"></div>
@@ -376,6 +365,7 @@
     </div>
 
     <!-- ===== JAVASCRIPT ===== -->
+    <script src="analyst.js"></script>
     <script src="docUpload.js"></script>
 </body>
 </html>

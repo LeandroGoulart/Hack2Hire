@@ -53,8 +53,6 @@ body {
     font-family: var(--font-primary);
     background: var(--gray-50);
     color: var(--gray-800);
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -1606,3 +1604,79 @@ body {
 .gap-16 { gap: 16px; }
 .w-full { width: 100%; }
 .hidden { display: none !important; }
+
+/* ===== ANALYST ENVIRONMENT SHELL ===== */
+.app-shell {
+    min-height: 100vh;
+}
+
+.app-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    flex: 0 0 auto;
+}
+
+.top-status .status-dot {
+    margin-right: 6px;
+    vertical-align: 1px;
+}
+
+.main {
+    flex: 1;
+    max-width: 1600px;
+    padding: 26px 28px 38px;
+}
+
+.page-title {
+    margin-bottom: 20px;
+}
+
+.page-title h2 {
+    font-size: 25px;
+    letter-spacing: 0;
+}
+
+.grid-2 {
+    gap: 20px;
+}
+
+.card {
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+.footer {
+    margin-top: 0;
+}
+
+.sidebar-error {
+    padding: 12px;
+    color: #d9e3ee;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+@media (max-width: 980px) {
+    .main {
+        padding: 22px 20px 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main {
+        padding: 16px;
+    }
+
+    .topbar {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}

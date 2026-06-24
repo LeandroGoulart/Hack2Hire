@@ -872,7 +872,7 @@ body {
 .analysis-panorama {
     display: none;
     margin-bottom: 18px;
-    padding: 16px;
+    padding: 12px;
     border: 1px solid #cfe0f5;
     border-radius: var(--radius-sm);
     background: #f5f9ff;
@@ -886,8 +886,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 .panorama-header h4 {
@@ -907,43 +907,53 @@ body {
 
 .panorama-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 0.78fr)) minmax(0, 1.45fr);
+    gap: 5px;
 }
 
 .panorama-card {
-    padding: 12px;
+    min-width: 0;
+    min-height: 58px;
+    padding: 9px 8px;
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-sm);
     background: white;
+    display: flex;
+    flex-direction: column;
 }
 
 .panorama-card small {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     color: var(--gray-500);
-    font-size: 11px;
+    font-size: 9px;
+    line-height: 1.2;
 }
 
 .panorama-card strong {
+    display: block;
+    min-width: 0;
+    margin-top: auto;
     color: var(--gray-800);
-    font-size: 18px;
+    font-size: clamp(12px, 1.25vw, 16px);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
 }
 
 .panorama-types {
-    margin-top: 12px;
+    margin-top: 9px;
     display: flex;
     flex-wrap: wrap;
     gap: 7px;
 }
 
 .panorama-type {
-    padding: 5px 9px;
+    padding: 4px 7px;
     border-radius: 100px;
     background: white;
     border: 1px solid var(--gray-200);
     color: var(--gray-600);
-    font-size: 11px;
+    font-size: 9px;
 }
 
 @media (max-width: 700px) {

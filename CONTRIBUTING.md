@@ -49,7 +49,7 @@ feat(client): cria ambiente independente do cliente
 ### Tipos permitidos
 
 | Tipo | Uso |
-|---|---|
+| --- | --- |
 | `feat` | Nova funcionalidade ou novo modulo. |
 | `fix` | Correcao de erro ou comportamento incorreto. |
 | `refactor` | Reorganizacao sem alterar a finalidade da funcionalidade. |
@@ -65,7 +65,7 @@ feat(client): cria ambiente independente do cliente
 ### Escopos recomendados
 
 | Escopo | Area |
-|---|---|
+| --- | --- |
 | `client` | Ambiente e funcionalidades do cliente. |
 | `analyst` | Dashboard e ferramentas do analista. |
 | `doc-upload` | Upload, simulacao e analise documental. |

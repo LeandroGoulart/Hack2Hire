@@ -1015,8 +1015,8 @@
             <div class="panorama-grid">
                 <div class="panorama-card"><small>Documentos analisados</small><strong>${summary.total}</strong></div>
                 <div class="panorama-card"><small>Tipos identificados</small><strong>${Object.keys(summary.types).length}</strong></div>
-                <div class="panorama-card"><small>Valor total identificado</small><strong>${formatCurrency(summary.totalValue)}</strong></div>
                 <div class="panorama-card"><small>Pessoas identificadas</small><strong>${summary.involved}</strong></div>
+                <div class="panorama-card"><small>Valor total identificado</small><strong>${formatCurrency(summary.totalValue)}</strong></div>
             </div>
             <div class="panorama-types">${typeBadges}</div>
         `;

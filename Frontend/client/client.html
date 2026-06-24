@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="client.css">
+    <link rel="stylesheet" href="client.css?v=5">
 </head>
 <body>
     <!-- ===== HEADER ===== -->
@@ -76,46 +76,12 @@
                             <span class="format-badge"><i class="fas fa-file-image"></i> JPG</span>
                             <span class="format-badge"><i class="fas fa-file-image"></i> PNG</span>
                         </div>
-                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png">
-                    </div>
-
-                    <!-- File Info -->
-                    <div class="file-info" id="fileInfo">
-                        <div class="file-detail">
-                            <i class="fas fa-file-pdf" id="fileIcon"></i>
-                            <div>
-                                <div class="name" id="fileName">documento.pdf</div>
-                                <div class="size" id="fileSize">0 KB</div>
-                            </div>
-                        </div>
-                        <div class="file-status">
-                            <i class="fas fa-check-circle"></i> Pronto para análise
-                        </div>
-                    </div>
-
-                    <!-- Bucket/Key (opcional) -->
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div>
-                                <label class="form-label"><i class="fas fa-folder"></i> Bucket S3</label>
-                                <input class="form-input" id="bucketInput" value="docsmart-grupo10" placeholder="Nome do bucket">
-                            </div>
-                            <div>
-                                <label class="form-label"><i class="fas fa-key"></i> Chave (opcional)</label>
-                                <input class="form-input" id="keyInput" placeholder="ex: documentos-sinistro/arquivo.pdf">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- API URL -->
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-server"></i> API Gateway Endpoint</label>
-                        <input class="form-input" id="apiUrlInput" value="https://ljdmh3sai3.execute-api.us-east-1.amazonaws.com/prod/analisar-sinistro" placeholder="URL da API">
+                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" multiple>
                     </div>
 
                     <!-- Actions -->
                     <button class="btn btn-secondary btn-block" id="analyzeBtn">
-                        <span class="btn-text"><i class="fas fa-microchip"></i> Analisar documentos</span>
+                        <span class="btn-text"><i class="fas fa-paper-plane"></i> Enviar documentos</span>
                         <span class="spinner"></span>
                     </button>
 
@@ -128,12 +94,9 @@
                         </button>
                     </div>
 
-                    <div style="margin-top: 12px; padding: 12px; background: #f0f5ff; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
-                        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600);">
-                            <i class="fas fa-info-circle" style="color: var(--primary);"></i>
-                            <span>O documento é processado pelo API Gateway, que aciona a Lambda e o agente Strands</span>
-                        </div>
-                    </div>
+                    <button class="btn btn-start-service btn-block" id="startServiceBtn" disabled>
+                        <i class="fas fa-comments"></i> Iniciar atendimento
+                    </button>
                 </div>
             </div>
 
@@ -143,187 +106,105 @@
                     <div class="card-header-left">
                         <img src="../assets/image/Identidade_ficticia/db.png" alt="Consultar" class="database-img">
                         <div class="header-text">
-                            <h3>Consulta e Resultados</h3>
-                            <span class="sub">Busque registros ou veja o último resultado</span>
+                            <h3>Processo documental</h3>
+                            <span class="sub">Acompanhe o andamento da solicitação</span>
                         </div>
                     </div>
                     <span class="badge-header">
-                        <i class="fas fa-check-circle" style="color: var(--success);"></i> DynamoDB
+                        <i class="fas fa-shield-halved" style="color: var(--success);"></i> Atendimento seguro
                     </span>
                 </div>
                 <div class="card-body">
-                    <!-- ===== SEARCH / FILTER SECTION ===== -->
-                    <div class="search-section">
-                        <div class="filter-tabs" id="filterTabs">
-                            <button class="filter-tab active" data-filter="all">
-                                Todos <span class="count" id="countAll">0</span>
-                            </button>
-                            <button class="filter-tab" data-filter="boletim">
-                                Boletim <span class="count" id="countBoletim">0</span>
-                            </button>
-                            <button class="filter-tab" data-filter="laudo">
-                                Laudo <span class="count" id="countLaudo">0</span>
-                            </button>
-                            <button class="filter-tab" data-filter="fiscal">
-                                Nota Fiscal <span class="count" id="countFiscal">0</span>
-                            </button>
-                            <button class="filter-tab" data-filter="outro">
-                                Outros <span class="count" id="countOutro">0</span>
-                            </button>
-                        </div>
-
-                        <div class="search-row">
-                            <div class="form-group">
-                                <label class="form-label"><i class="fas fa-search"></i> Buscar por ID ou texto</label>
-                                <input class="form-input" id="searchInput" placeholder="Ex: sin-abc123 ou 'boletim'">
+                    <section class="document-guide">
+                        <div class="document-progress" aria-live="polite">
+                            <div class="document-progress-head">
+                                <div>
+                                    <strong>Progresso dos documentos</strong>
+                                    <span id="progressPercentage">0% concluído</span>
+                                </div>
+                                <span id="progressSummary">0 de 4 documentos enviados</span>
                             </div>
-                            <div class="form-group" style="flex: 0.5; min-width: 120px;">
-                                <label class="form-label"><i class="fas fa-calendar"></i> Data inicial</label>
-                                <input class="form-input" id="dateStart" type="date">
+                            <div class="document-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar">
+                                <span id="progressBarFill"></span>
                             </div>
-                            <div class="form-group" style="flex: 0.5; min-width: 120px;">
-                                <label class="form-label"><i class="fas fa-calendar"></i> Data final</label>
-                                <input class="form-input" id="dateEnd" type="date">
-                            </div>
-                            <button class="btn btn-secondary" id="searchBtn" style="height: 38px;">
-                                <i class="fas fa-search"></i> Buscar
-                            </button>
-                            <button class="btn btn-outline" id="clearSearchBtn" style="height: 38px;">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-
-                        <!-- Search Results List -->
-                        <div class="search-results" id="searchResults">
-                            <div class="no-results" id="noResults">
-                                <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-                                Nenhum registro encontrado
+                            <div class="document-counters">
+                                <span class="counter-sent"><i class="fas fa-circle-check"></i> <strong id="sentCount">0</strong> enviados</span>
+                                <span class="counter-pending"><i class="fas fa-clock"></i> <strong id="pendingCount">4</strong> pendentes</span>
                             </div>
                         </div>
 
-                        <!-- Select All e Contador -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; flex-wrap: wrap; gap: 8px;">
-                            <div class="select-all-wrapper">
-                                <input type="checkbox" id="selectAllCheckbox">
-                                <label for="selectAllCheckbox">Selecionar todos</label>
-                                <span class="selected-count" id="selectedCount" style="display: none;">0 selecionados</span>
-                            </div>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                <button class="btn btn-export-selected btn-sm" id="exportSelectedBtn" style="display: none; height: 32px; padding: 4px 16px; font-size: 12px;">
-                                    <i class="fas fa-check-circle"></i> Exportar Selecionados
-                                </button>
+                        <div class="document-section-title">
+                            <div>
+                                <strong>Documentos necessários</strong>
+                                <span>Gentileza enviar os seguintes documentos</span>
                             </div>
                         </div>
 
-                        <!-- Pagination -->
-                        <div class="pagination" id="pagination">
-                            <button id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
-                            <span id="pageInfo">
-                                <span id="currentPage">1</span>
-                                <span style="color: var(--gray-400);">de</span>
-                                <span id="totalPages">1</span>
-                            </span>
-                            <button id="nextPage"><i class="fas fa-chevron-right"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Results Panel -->
-                    <div class="results-panel" id="resultsPanel">
-                        <div class="analysis-panorama" id="analysisPanorama"></div>
-
-                        <!-- Tipo com badge -->
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-tag"></i> Tipo</span>
-                            <span class="value">
-                                <span class="tag tag-boletim" id="resultTipo">Boletim de Ocorrência</span>
-                            </span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-hashtag"></i> ID</span>
-                            <span class="value" id="resultId" style="font-family: monospace; font-size: 13px;">-</span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-calendar"></i> Data</span>
-                            <span class="value" id="resultData">-</span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-location-dot"></i> Local</span>
-                            <span class="value" id="resultLocal">-</span>
+                        <div class="document-requirements" id="documentRequirements">
+                            <article class="requirement-item" data-requirement="boletim" title="Documento emitido pela autoridade responsável com o registro oficial do ocorrido.">
+                                <span class="requirement-icon"><i class="fas fa-file-shield"></i></span>
+                                <div>
+                                    <strong>Boletim de Ocorrência</strong>
+                                    <small>Registro oficial do ocorrido.</small>
+                                </div>
+                                <span class="requirement-status"><i class="fas fa-clock"></i> Pendente</span>
+                            </article>
+                            <article class="requirement-item" data-requirement="laudo" title="Documento médico necessário quando houver atendimento, lesão ou afastamento.">
+                                <span class="requirement-icon"><i class="fas fa-notes-medical"></i></span>
+                                <div>
+                                    <strong>Laudo Médico</strong>
+                                    <small>Necessário quando houver atendimento ou lesão.</small>
+                                </div>
+                                <span class="requirement-status"><i class="fas fa-clock"></i> Pendente</span>
+                            </article>
+                            <article class="requirement-item" data-requirement="fiscal" title="Comprovante financeiro das despesas, serviços ou produtos relacionados ao sinistro.">
+                                <span class="requirement-icon"><i class="fas fa-receipt"></i></span>
+                                <div>
+                                    <strong>Nota Fiscal</strong>
+                                    <small>Comprovante dos serviços ou despesas informadas.</small>
+                                </div>
+                                <span class="requirement-status"><i class="fas fa-clock"></i> Pendente</span>
+                            </article>
+                            <article class="requirement-item" data-requirement="outro" title="Fotos, declarações e outros comprovantes que complementam a solicitação.">
+                                <span class="requirement-icon"><i class="fas fa-file-circle-plus"></i></span>
+                                <div>
+                                    <strong>Outros documentos</strong>
+                                    <small>Fotos, declarações e comprovantes complementares.</small>
+                                </div>
+                                <span class="requirement-status"><i class="fas fa-clock"></i> Pendente</span>
+                            </article>
                         </div>
 
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-money-bill-wave"></i> Valor Estimado</span>
-                            <span class="value" id="resultValor" style="font-weight: 600; color: var(--primary);">-</span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-users"></i> Envolvidos</span>
-                            <span class="value" id="resultEnvolvidos">-</span>
-                        </div>
-
-                        <div class="result-item result-item-full">
-                            <span class="label"><i class="fas fa-file-lines"></i> Resumo</span>
-                            <span class="value" id="resultResumo">-</span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-clock"></i> Processado em</span>
-                            <span class="value" id="resultProcessado" style="font-size: 13px; color: var(--gray-500);">-</span>
-                        </div>
-
-                        <div class="result-item">
-                            <span class="label"><i class="fas fa-file"></i> Arquivo</span>
-                            <span class="value" id="resultArquivo" style="font-size: 13px; color: var(--gray-500);">-</span>
-                        </div>
-
-                        <!-- Ações do resultado -->
-                        <div class="result-actions">
-                            <button class="btn btn-outline" id="copyResultBtn" style="flex: 1;">
-                                <i class="fas fa-copy"></i> Copiar JSON
-                            </button>
-                            <button class="btn btn-export" id="exportCurrentBtn" style="flex: 1;">
-                                <i class="fas fa-file-excel"></i> Exportar CSV
-                            </button>
-                        </div>
-
-                        <!-- Export Actions Gerais -->
-                        <div class="export-actions">
-                            <button class="btn btn-export-all" id="exportAllBtn">
-                                <i class="fas fa-file-excel"></i> Exportar Todos
-                            </button>
-                            <button class="btn btn-outline" id="printAllBtn">
-                                <i class="fas fa-print"></i> Imprimir Relatório
-                            </button>
-                        </div>
-
-                        <!-- DynamoDB Preview -->
-                        <div style="margin-top: 20px;">
-                            <div class="dynamo-header">
-                                <i class="fas fa-table"></i>
-                                <span>DynamoDB · Registro completo</span>
-                                <span class="badge-db"><i class="fas fa-check"></i> put_item</span>
+                        <div class="document-section-title added-title">
+                            <div>
+                                <strong>Documentos adicionados</strong>
+                                <span>Arquivos recebidos durante esta solicitação</span>
                             </div>
-                            <div class="dynamo-preview" id="dynamoPreview">
-                                <span class="empty">// aguardando análise</span>
+                            <span class="added-count" id="addedCount">0</span>
+                        </div>
+
+                        <div class="uploaded-documents show" id="uploadedDocuments" aria-live="polite">
+                            <div class="uploaded-documents-empty" id="uploadedDocumentsEmpty">
+                                <i class="fas fa-file-circle-plus"></i>
+                                <strong>Nenhum documento enviado até o momento.</strong>
+                                <span>Os arquivos adicionados aparecerão aqui automaticamente.</span>
                             </div>
-                            <div style="margin-top: 8px; font-size: 12px; color: var(--gray-400); display: flex; gap: 16px; flex-wrap: wrap;">
-                                <span><i class="fas fa-info-circle"></i> ID gerado automaticamente pelo agente</span>
-                                <span><i class="fas fa-aws"></i> Amazon DynamoDB</span>
+                            <div class="uploaded-documents-list" id="uploadedDocumentsList"></div>
+                        </div>
+
+                        <div class="missing-documents" id="missingDocuments">
+                            <strong><i class="fas fa-list-check"></i> Documentos faltantes</strong>
+                            <p id="missingDocumentsText">Boletim de Ocorrência, Laudo Médico, Nota Fiscal e Outros documentos.</p>
+                        </div>
+
+                        <div class="service-ready" id="serviceReady" hidden>
+                            <i class="fas fa-circle-check"></i>
+                            <div>
+                                <strong>Todos os documentos necessários foram enviados com sucesso.</strong>
+                                <p>Sua solicitação agora está pronta para análise.</p>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Empty state -->
-                    <div class="empty-state" id="emptyState">
-                        <div class="icon">
-                            <i class="fas fa-inbox"></i>
-                        </div>
-                        <h4>Nenhuma análise realizada ainda</h4>
-                        <p>Faça upload de um documento no painel ao lado para iniciar</p>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>
@@ -368,6 +249,7 @@
     </div>
 
     <!-- ===== JAVASCRIPT ===== -->
-    <script src="client.js"></script>
+    <script src="client.js?v=5"></script>
+    <script src="chatbot.js?v=2"></script>
 </body>
 </html>

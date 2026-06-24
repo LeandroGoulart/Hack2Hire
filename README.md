@@ -73,8 +73,18 @@ Hack2Hire/
 |   `-- lambda_function_corrigida.py
 |-- Frontend/
 |   |-- index.html
-|   |-- styles.css
-|   |-- script.js
+|   |-- client/
+|   |   |-- client.html
+|   |   |-- client.css
+|   |   `-- client.js
+|   |-- analyst/
+|   |   |-- analyst.html
+|   |   |-- analyst.css
+|   |   |-- analyst.js
+|   |   |-- docUpload.html
+|   |   |-- docUpload.css
+|   |   |-- docUpload.js
+|   |   `-- architecture.html
 |   `-- assets/
 |-- Docs_uteis/
 |   |-- Apresentacao/
@@ -94,10 +104,28 @@ Hack2Hire/
 
 ## Como Visualizar o Frontend
 
-O frontend e estatico. Abra o arquivo abaixo no navegador:
+O frontend e estatico. A entrada principal esta reservada para a futura pagina institucional e comercial:
 
 ```text
 Frontend/index.html
+```
+
+Para abrir o ambiente do cliente:
+
+```text
+Frontend/client/client.html
+```
+
+Para abrir o painel do analista:
+
+```text
+Frontend/analyst/analyst.html
+```
+
+Para abrir o modulo de upload e analise documental:
+
+```text
+Frontend/analyst/docUpload.html
 ```
 
 Tambem e possivel servir a pasta `Frontend` com qualquer servidor local simples.
